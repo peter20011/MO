@@ -16,7 +16,7 @@ double szereg(double x)
     double znak=-1;
     double krok=1;
 // ograniczenie i wynika z tego iż obliczamy silnię za jego pomocą
-    for(int i=2;i<30;++i)
+    for(int i=2;i<20;++i)
     {
         krok=krok*(x/i);
         wynik+=znak*krok;
@@ -48,7 +48,7 @@ int main(){
         plikDane>>wartosc_plik;
     
     //wersja z niepoprawnym wynikiem
-    /* 
+    /*
     //obliczanie wartości funkcji oraz błędu względengo
     wartosc_obliczona=funkcja_z_zadania(argument);
     blad=abs((wartosc_obliczona-wartosc_plik)/wartosc_plik);
@@ -88,15 +88,18 @@ int main(){
             blad=abs((wartosc_obliczona-wartosc_plik)/wartosc_plik);
             blad_log=log10(blad);
             daneWynikowe<<wartosc_log_10<<" "<<blad_log<<"\n";
+
         }else{
             wartosc_obliczona=funkcja_z_zadania(argument);
             blad=abs((wartosc_obliczona-wartosc_plik)/wartosc_plik);
             blad_log=log10(blad);
             daneWynikowe<<wartosc_log_10<<" "<<blad_log<<"\n";
+
         }
+
     
     }
-
+    
     daneWynikowe.close();
     daneWynikowe.close();
     plikDane.close();
