@@ -12,7 +12,7 @@ double licznikbitowdouble=0.0;
 float precyzjafloat=1.0f, pomocnicza_float=1.1f; //pomocznicza_float większa od 1 by while się wykonywał
 
 while(pomocnicza_float >1.0f){
-    precyzjafloat/=2.0; // przechodzimy odpowiednio po bitach mantysy o 1
+    precyzjafloat/=2.0f; // przechodzimy odpowiednio po bitach mantysy o 1
     pomocnicza_float=1.0f+precyzjafloat;
     if(pomocnicza_float!=1.0f) // nie zwiększamy licznika dla ostatniego przebiegu pętli
         licznikbitowfloat++;
@@ -23,7 +23,7 @@ while(pomocnicza_float >1.0f){
 double precyzjadouble=1.0f, pomocnicza_double=1.1f;//pomocznicza_fdouble większa od 1 by while się wykonywał
 
 while(pomocnicza_double >1.0f){
-    precyzjadouble/=2.0; // przechodzimy odpowiednio po bitach mantysy o 1
+    precyzjadouble/=2.0f; // przechodzimy odpowiednio po bitach mantysy o 1
     pomocnicza_double=1.0f+precyzjadouble;
     if(pomocnicza_double!=1.0f) // nie zwiększamy licznika dla ostatniego przebiegu pętli
         licznikbitowdouble++;
