@@ -20,19 +20,19 @@ while(pomocnicza_float >1.0f){
 
 //dla double
 
-double precyzjadouble=1.0f, pomocnicza_double=1.1f;//pomocznicza_fdouble większa od 1 by while się wykonywał
+double precyzjadouble=1.0, pomocnicza_double=1.1;//pomocznicza_fdouble większa od 1 by while się wykonywał
 
-while(pomocnicza_double >1.0f){
-    precyzjadouble/=2.0f; // przechodzimy odpowiednio po bitach mantysy o 1
-    pomocnicza_double=1.0f+precyzjadouble;
-    if(pomocnicza_double!=1.0f) // nie zwiększamy licznika dla ostatniego przebiegu pętli
+while(pomocnicza_double >1.0){
+    precyzjadouble/=2.0; // przechodzimy odpowiednio po bitach mantysy o 1
+    pomocnicza_double=1.0+precyzjadouble;
+    if(pomocnicza_double!=1.0) // nie zwiększamy licznika dla ostatniego przebiegu pętli
         licznikbitowdouble++;
 }
 
 
 cout<<"Liczba bitow mantysy  dla float wynosi:"<<licznikbitowfloat<<endl;
-cout<<"Epsilon maszynosy dla float wynosi:"<<2*precyzjafloat<<endl; // epsilon maszynowy -> precyzja jest prawie 0 więc trzeba po wyjściu z pętli pomnożyć razy 2
+cout<<"Epsilon maszynosy dla float wynosi:"<<2*precyzjafloat<<endl; // epsilon maszynowy ->
 cout<<endl;
 cout<<"Liczba bitow mantysy  dla double wynosi:"<<licznikbitowdouble<<endl;
-cout<<"Epsilon maszynosy dla dobule wynosi:"<<2*precyzjadouble<<endl; // epsilon maszynowy -> precyzja jest prawie 0 więc trzeba po wyjściu z pętli pomnożyć razy 2
+cout<<"Epsilon maszynosy dla dobule wynosi:"<<2*precyzjadouble<<endl; // epsilon maszynowy 
 }
