@@ -34,6 +34,7 @@ double Picarda(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochodna_fi, doub
     while (kontynuuj) {
         cout << iteracja << " - ";
 
+        // Obliczanie przybliżenia
         przyblizenie = fi(przyblizenie);
         cout << przyblizenie << " - ";
 
@@ -44,6 +45,7 @@ double Picarda(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochodna_fi, doub
 
         cout << residuum << " - " << estymator << endl;
 
+        //warunek przerwania
         if ((fabs(residuum) <= tolerancja_residuum) && (estymator <= tolerancja_bledu) || (iteracja >= max_iteracji)) {
             kontynuuj = false;
         }
@@ -53,7 +55,6 @@ double Picarda(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochodna_fi, doub
 
     return 0;
 }
-
 
 /**
  * @brief metoda bisekcji do rozwiazywania algebraicznych równań nielinowych
@@ -83,12 +84,14 @@ double bisekcja(funkcja funkcja_poczatkowa, double a, double b, double max_itera
     cout << "ITERACJA - A - B - X- RESIDUUM - ESTYMATOR BLEDU" << endl;
 
     while (kontynuuj) {
+        // obliczanie srodka przedziału
         x = (a + b) / 2.0;
         estymator = fabs((b - a) / 2.0);
         residuum = funkcja_poczatkowa(x);
 
         cout << iteracja << " - " << a << " - " << b << " - " << x << " - " << residuum << " - " << estymator << endl;
 
+        //wybranie nowego punktu skrajnego
         if ((funkcja_poczatkowa(a) < 0 && funkcja_poczatkowa(x) > 0) ||
             (funkcja_poczatkowa(a) > 0 && funkcja_poczatkowa(x) < 0)) {
             b = x;
@@ -126,6 +129,7 @@ double Newton(funkcja funkcja_poczatkowa, funkcja funkcja_pochodna, double x, do
     cout << "ITERACJA - X1 - RESIDUUM - ESTYMATOR BLEDU" << endl;
 
     while (kontynuuj) {
+        //obliczanie wartosci x1
         x1 = x0 - (funkcja_poczatkowa(x0) / funkcja_pochodna(x0));
         estymator = fabs(x0 - x1);
         x0 = x1;
@@ -133,6 +137,7 @@ double Newton(funkcja funkcja_poczatkowa, funkcja funkcja_pochodna, double x, do
 
         cout << iteracja << " - " << x1 << " - " << residuum << " - " << estymator << endl;
 
+        //warunki przerwania
         if ((fabs(residuum) <= tolerancja_residuum) && (estymator <= tolerancja_bledu) || (iteracja >= max_iteracji)) {
             kontynuuj = false;
         }
@@ -169,9 +174,11 @@ double siecznych(funkcja funkcja_poczatkowa, double x0, double x1, double max_it
 
         cout << iteracja << " - " << x1 << " - " << residuum << " - " << estymator << endl;
 
+        // ustawienie nowych punktów
         x0 = x1;
         x1 = x2;
 
+        //warunki przerwania
         if ((fabs(residuum) <= tolerancja_residuum) && (estymator <= tolerancja_bledu) || (iteracja >= max_iteracji)) {
             kontynuuj = false;
         }
