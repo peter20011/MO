@@ -4,9 +4,19 @@
 using namespace std;
 
 typedef double (*funkcja)(double);
+/**
+ * @brief metoda Picarda do rozwiązania algebraicznych równań nieliniowych
+ * 
+ * @param funkcja_poczatkowa funkcja dla której szukamy rozwiązania
+ * @param fi przekształcenie funkcji do postaci x=
+ * @param pochodna_fi pochodna z funkcji fi
+ * @param x punkt początkowy
+ * @param max_iteracji górna granic iteracji
+ * @param tolerancja_bledu  zadana tolerancja bledu
+ * @param tolerancja_residuum  zadanda tolerancja residuum
+ */
 
-double Picarda(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochodna_fi, double x, double max_iteracji, double tolerancja_bledu,
-              double tolerancja_residuum) {
+double Picarda(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochodna_fi, double x, double max_iteracji, double tolerancja_bledu, double tolerancja_residuum) {
 
     cout << "Metoda Picarda" << endl;
 
@@ -43,6 +53,18 @@ double Picarda(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochodna_fi, doub
 
     return 0;
 }
+
+
+/**
+ * @brief metoda bisekcji do rozwiazywania algebraicznych równań nielinowych
+ * 
+ * @param funkcja_poczatkowa funkcja dla której szukamy rozwiazywania
+ * @param a lewy kraniec przedzialu
+ * @param b  prawy kraniec przedzialu
+ * @param max_iteracji górna granica iteracji
+ * @param tolerancja_bledu zadana tolerancja bledu
+ * @param tolerancja_residuum  zadana tolerancja residuum
+ */
 
 double bisekcja(funkcja funkcja_poczatkowa, double a, double b, double max_iteracji, double tolerancja_bledu, double tolerancja_residuum) {
 
@@ -84,8 +106,16 @@ double bisekcja(funkcja funkcja_poczatkowa, double a, double b, double max_itera
     return 0;
 }
 
-double
-Newton(funkcja funkcja_poczatkowa, funkcja funkcja_pochodna, double x, double max_iteracji, double tolerancja_bledu, double tolerancja_residuum) {
+/**
+ * @brief metoda bisekcji do rozwiazywania algebraicznych równań nielinowych
+ * @param funkcja_poczatkowa funkcja dla której szukamy rozwiazywania
+ * @param funkcja_pochodna pochodna funkcji
+ * @param x punkt początkowy
+ * @param max_iteracji górna granica iteracji
+ * @param tolerancja_bledu zadana tolerancja bledu
+ * @param tolerancja_residuum zadana tolerancja residuum
+ */
+double Newton(funkcja funkcja_poczatkowa, funkcja funkcja_pochodna, double x, double max_iteracji, double tolerancja_bledu, double tolerancja_residuum) {
 
     cout << "Metoda Newtona" << endl;
 
@@ -113,6 +143,15 @@ Newton(funkcja funkcja_poczatkowa, funkcja funkcja_pochodna, double x, double ma
     return 0;
 }
 
+/**
+ * @brief metoda siecznych do rozwiazywania algebraicznych równań nielinowych
+ * @param funkcja_poczatkowa funkcja dla której szukamy rozwiazywania
+ * @param x0 punkt
+ * @param x1 punkt x + delta x
+ * @param max_iteracji górna granica iteracji
+ * @param tolerancja_bledu  zadana tolerancja bledu
+ * @param tolerancja_residuum  zadana tolerancja residuum
+ */
 double siecznych(funkcja funkcja_poczatkowa, double x0, double x1, double max_iteracji, double tolerancja_bledu, double tolerancja_residuum) {
 
     cout << "Metoda siecznych" << endl;

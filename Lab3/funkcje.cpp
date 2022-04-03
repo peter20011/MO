@@ -18,6 +18,8 @@ double fi_pierwsza(double x) {
 double pochodna_fi_pierwsza(double x) {
     return (1.0 / 4.0) * sin(x / 2.0);
 }
+/////////////////////////////////////////////////////////////
+
 
 double funkcja_druga(double x) {
     return tan(2.0 * x) - x - 1.0;
