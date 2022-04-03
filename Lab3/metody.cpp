@@ -4,9 +4,9 @@
 
 using namespace std;
 
-typedef double (*funkcja)(double);
 
-double Picard(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochoda_fi,double x, double max_iteracji, double toleracja_bledu, double tolerancja_residuum){
+
+double Picard(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochoda_fi,double x, double max_iteracji, double tolerancja_bledu, double tolerancja_residuum){
 
     cout<<"Metoda Picara"<<endl;
 
@@ -35,7 +35,7 @@ double Picard(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochoda_fi,double 
         residuum=funkcja_poczatkowa(x);
         cout << residuum << " - " << estymator << endl;
 
-        if((fabs(residuum)<=tolerancja_residuum) && (estymator <= tolerancja_bledu) || (iteracja)>= max_iteracji){
+        if((fabs(residuum)<=tolerancja_residuum) && (estymator <= tolerancja_residuum) || (iteracja)>= max_iteracji){
             kontynuuj=false;
         }
 
@@ -49,7 +49,7 @@ double Picard(funkcja funkcja_poczatkowa, funkcja fi, funkcja pochoda_fi,double 
 }
 
 
-double bisekjca(funkcja funkcja_poczatkowa, double a, doubleb b, double max_iteracji, double tolerancja_residuum, double tolerancja_bledu)
+double bisekjca(funkcja funkcja_poczatkowa, double a, double b, double max_iteracji, double tolerancja_residuum, double tolerancja_bledu)
 {
     cout << "METODA BISEKCJI" << endl;
 
@@ -66,7 +66,7 @@ double bisekjca(funkcja funkcja_poczatkowa, double a, doubleb b, double max_iter
 
     while(kontynuuj){
         x=(a+b)/2.0;
-        estymator=fabs((b-a)/2.0)
+        estymator=fabs((b-a)/2.0);
         residuum=funkcja_poczatkowa(x);
 
         cout << iteracja << " - " << a << " - " << b << " - " << x << " - " << residuum << " - " << estymator << endl;
@@ -108,7 +108,7 @@ double Newton(funkcja funkcja_poczatkowa,funkcja funkcja_pochodna,double x, doub
             kontynuuj=true;
         }
 
-        iter_swap+=1;
+        iteracja+=1;
     }
 
     return 0;
@@ -140,5 +140,5 @@ double siecznych(funkcja funkcja_poczatkowa, double x0, double x1, double max_it
         iteracja+=1;
     }
 
-    return
+    return 0;
 }
