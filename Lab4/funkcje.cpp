@@ -1,7 +1,6 @@
 #include <iostream>
 #include <math.h>
 
-
 using namespace std;
 
 //kreyteria zakończenia iteracji
