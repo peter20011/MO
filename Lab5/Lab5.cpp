@@ -25,7 +25,7 @@ void swap_rows(double** A, int k, int* index){
 }
 
 
-//Redukcja kolumn i uzupe�nienie macierzy L
+//Redukcja kolumn i uzupelnienie macierzy L
 void calculate(double** A, double **L,int *index, int k){
 	for(int i = k; i < N - 1; i++){
 		double reducer = (A[index[i + 1]][k] / A[index[k]][k]);
@@ -80,7 +80,7 @@ double *calculate_x(double **M, double *y) {
 }
 
 
-//Rozk�ad LU
+//Rozklad LU
 void decomposition(double** A,double *b,  int* index){
 	double** L = matrix_L(N);
 	

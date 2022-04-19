@@ -2,7 +2,7 @@
 #include <stdio.h>
 using namespace std;
 
-//Alokacja i uzupe�nienie macierzy A
+//Alokacja i uzupelnienie macierzy A
 double **allocate_matrix_A(int N){
 	double **m = new double*[N];
 	for(int i = 0; i < N; i++)
@@ -17,7 +17,7 @@ double **allocate_matrix_A(int N){
 }
 
 
-//Alokacja i uzupe�nienie wektora b
+//Alokacja i uzupelnienie wektora b
 double *allocate_vector_b(int N){
 	double* b = new double[N];
 	
@@ -30,7 +30,7 @@ double *allocate_vector_b(int N){
 }
 
 
-//Alokacja i wype�nienie wektora indeks�w
+//Alokacja i wypelnienie wektora indeksow
 int *index_vector(int N){
 	int *index = new int[N];
 	
@@ -47,7 +47,7 @@ double *allocate_vector(int N){
 }
 
 
-//Funkcje usuwaj�ce macierze i wektory
+//Funkcje usuwajace macierze i wektory
 void delete_matrix(double **m, int N){
 	for(int i = 0; i < N; i++)
 		delete [] m[i];
@@ -63,7 +63,7 @@ void delete_vector(int *v){
 }
 
 
-//Funkcja tworzy i wype�nie 1 macierz L
+//Funkcja tworzy i wypelnie 1 macierz L
 double** matrix_L(int N){
 	double **l = new double*[N];
 	for(int i = 0; i < N; i++)
@@ -80,7 +80,7 @@ double** matrix_L(int N){
 }
 
 
-//Funkcja tworzy i wype�nia kolejno macierz U
+//Funkcja tworzy i wypelnia kolejno macierz U
 double** matrix_U(int N, double **A, int* index){
 	double **u = new double*[N];
 	for(int i = 0; i < N; i++)
@@ -94,7 +94,7 @@ double** matrix_U(int N, double **A, int* index){
 }
 
 
-//Funkcja sprawdzaj�ca rozwi�zanie
+//Funkcja sprawdzajlca rozwiazanie
 void check(double *x, int N){
 	cout << "Sprawdzenie rozwiazania" << endl;
 	double **A = allocate_matrix_A(N);
@@ -113,7 +113,7 @@ void check(double *x, int N){
 }
 
 
-//Funkcje wy�wietlaj�ce macierz oraz wektor
+//Funkcje wyswietlajace macierz oraz wektor
 void show_matrix(char a, double** matrix, int* id, int N){
 	cout << a << endl;
 	for(int i = 0; i < N; i++){
