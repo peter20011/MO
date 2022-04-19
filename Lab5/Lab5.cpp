@@ -4,9 +4,9 @@
 
 using namespace std;
 
-#define N 4
+#define N 4 // rozmiar macierzy
 
-//Zamiana wektora indeksowego
+//Zamiana wektora indeksowego czeswiowy wybor element podstawowego
 void swap_rows(double** A, int k, int* index){
 	if(A[index[k]][index[k]] == 0){
 		int max_row = index[k + 1];
@@ -41,8 +41,9 @@ void calculate(double** A, double **L,int *index, int k){
 double *calculate_y(double **M, double *b, int* index_vector) {
     double *y = allocate_vector(N);
     
-    for(int i = 0; i < N; i++)
+    for(int i = 0; i < N; i++){
     	y[i] = 0;
+	}
 
     for (int i = 0; i < N; i++) {
 
