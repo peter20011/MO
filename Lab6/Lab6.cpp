@@ -15,7 +15,7 @@ using namespace std;
  * @param eta nowe wartosci na diagonali
  * @param rozmiar rozmiar macierzy
  */
-void rozwiazA(double *u, double *d, double *l, double *eta, int rozmiar) {
+void rozwiaz_A(double *u, double *d, double *l, double *eta, int rozmiar) {
   // Wykonanie pierwszego kroku dla A
   eta[0] = d[0];
 
@@ -32,7 +32,7 @@ void rozwiazA(double *u, double *d, double *l, double *eta, int rozmiar) {
  * @param r nowe wartosci dla wektora b
  * @param rozmiar rozmiar macierzy
  */
-void obliczWynik(double *u, double *x, double *eta, double *r, int rozmiar) {
+void oblicz_wynik(double *u, double *x, double *eta, double *r, int rozmiar) {
   // Obliczenie Xn
   x[rozmiar] = r[rozmiar] / eta[rozmiar];
 
@@ -50,7 +50,7 @@ void obliczWynik(double *u, double *x, double *eta, double *r, int rozmiar) {
  * @param r nowe wartosci dla wektora b
  * @param rozmiar
  */
-void rozwiazB(double *u, double *l, double *b, double *x, double *eta, double *r, int rozmiar) {
+void rozwiaz_B(double *u, double *l, double *b, double *x, double *eta, double *r, int rozmiar) {
   // Wykonanie pierwszego kroku dla A
   r[0] = b[0];
 
@@ -58,7 +58,7 @@ void rozwiazB(double *u, double *l, double *b, double *x, double *eta, double *r
   for (int i = 1; i < rozmiar + 1; i++)
     r[i] = b[i] - l[i] * r[i - 1] / eta[i - 1];
 
-  obliczWynik(u, x, eta, r, rozmiar);
+  oblicz_wynik(u, x, eta, r, rozmiar);
 }
 
 /**
@@ -68,7 +68,7 @@ void rozwiazB(double *u, double *l, double *b, double *x, double *eta, double *r
  * @param l wektor l
  * @param b wektor b
  */
-void uzupelnijWektor(double *u, double *d, double *l, double *b) {
+void uzupelnij_wektor(double *u, double *d, double *l, double *b) {
   u[0] = 1.0 / 2.0;
   u[1] = 1.0 / 4.0;
   u[2] = 1.0 / 6.0;
@@ -97,14 +97,14 @@ void uzupelnijWektor(double *u, double *d, double *l, double *b) {
   b[5] = 332.0 / 11.0;
 }
 
-void wyswietlWektor(double *wektor, int rozmiar) {
+void wyswietl_wektor(double *wektor, int rozmiar) {
   cout << "\n";
   for (int i = 0; i < rozmiar; ++i)
     cout << wektor[i] << "\n";
   cout << "\n";
 }
 
-void usunWektor(double *wektor) { delete[] wektor; }
+void usun_wektor(double *wektor) { delete[] wektor; }
 
 int main() {
   double *u = new double[N - 1];
@@ -115,22 +115,22 @@ int main() {
   double *eta = new double[N];
   double *r = new double[N];
 
-  uzupelnijWektor(u, d, l, b);
-  rozwiazA(u, d, l, eta, N - 1);
-  rozwiazB(u, l, b, x, eta, r, N - 1);
+  uzupelnij_wektor(u, d, l, b);
+  rozwiaz_A(u, d, l, eta, N - 1);
+  rozwiaz_B(u, l, b, x, eta, r, N - 1);
 
   cout << "ALGORYTM THOMASA\n Wektor eta:";
-  wyswietlWektor(eta, N);
+  wyswietl_wektor(eta, N);
   cout << "Wektor r:";
-  wyswietlWektor(r, N);
+  wyswietl_wektor(r, N);
   cout << "Wektor x - rozwiazanie:";
-  wyswietlWektor(x, N);
+  wyswietl_wektor(x, N);
 
-  usunWektor(l);
-  usunWektor(d);
-  usunWektor(u);
-  usunWektor(b);
-  usunWektor(x);
+  usun_wektor(l);
+  usun_wektor(d);
+  usun_wektor(u);
+  usun_wektor(b);
+  usun_wektor(x);
 
   return 0;
 }
