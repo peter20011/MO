@@ -36,7 +36,7 @@ double *vector(){
 }
 
 
-//Wektor 
+//Wektor  eta -> nowe wartośc na diagonalnej 
 double *vector_l_eta(){
 	double *id = new double[N];
 	for (int i = 0; i < N; i++) 
@@ -54,7 +54,7 @@ void calculate_eta(double **A, double *v){
 }
 
 
-//Obliczanie r w wektorze b
+//Obliczanie r w wektorze b , nowe wartosci 
 void calculate_r(double *b, double *v){
 	for(int i = 1; i < N; i++)
 		b[i] -= v[i] * b[i - 1];

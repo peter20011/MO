@@ -113,7 +113,6 @@ int main()
 	show_matrix('A', A,index,  N);
 	
 	decomposition(A, b, index);
-	
 	delete_matrix(A, N);
 	delete_vector(b);
 	delete_vector(index);
