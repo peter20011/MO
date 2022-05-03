@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #define METHODS 9
-#define ITER 30
+#define ITER 20
 
 using namespace std;
 
@@ -63,7 +63,7 @@ template <typename T>
 T **allocate(){
 	T **er = new T*[ITER];
 	
-	for(int i = 0; i < ITER; i++)
+	for(int i = 0; i <= ITER; i++)
 		er[i] = new T[METHODS];
 		
 	return er;
@@ -82,7 +82,7 @@ void create_file(T** err, const char* filename){
 	}
 	
 	for(int i = 0; i < ITER; i++){
-		for(int j = 0; j < METHODS; j++)
+		for(int j = 0; j <= METHODS; j++)
 			output << scientific << log10(err[i][j]) << " ";
 		output << endl;
 	}
@@ -106,8 +106,8 @@ void calculate_err(const char* filename){
         err[i][3] = fabs(backward_diff_2(center,h)- derivative(center));
         err[i][4]= fabs(backward_diff_3(center,h)- derivative(center));
 		err[i][5] = fabs(central_diff_2(center, h) - derivative(center));
-        err[i][6]  =fabsl(forward_diff_2(center,h)- derivative(center));
-        err[i][7]   =fabs (forward_diff_3(center,h)-derivative(center));
+        err[i][6] =fabsl(forward_diff_2(center,h)- derivative(center));
+        err[i][7]  =fabs (forward_diff_3(center,h)-derivative(center));
 		err[i][8] = fabs(backward_diff_2(end, h) - derivative(end));
 		err[i][9] = fabs(backward_diff_3(end, h) - derivative(end));
 		
