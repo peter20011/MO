@@ -8,52 +8,52 @@ double TOLX=1e-10;
 double  TOLF=1e-10;
 
 void jacobi (double**A, double *x_0, const double *b, double *x_n){
-    double *e=new  double[size];
-    double *residual =new double[size];
+    double *e = new double[size];
+    double *residual = new double[size];
 
-    for(int n=0;n<ITERACJE;n++){
-        double *vectorOut=new double[size];
+    for(int n = 0; n < ITERACJE; n++) {
 
-        for(int i=0;i<size;i++){
-            double sum=0.0;
-            for(int j=0;j<size;j++){
+        double *vectorOut = new double[size];
+
+        for(int i = 0; i < size; i++) {
+            double sum = 0.0;
+            for(int j = 0; j < size; j++) {
                 double matrixElement;
-                if(i==j){
-                    matrixElement=0;
+                if(i == j) {
+                    matrixElement = 0;
+                } else {
+                    matrixElement = A[i][j];
                 }
-                else{
-                    matrixElement=A[i][j];
-                }
-                sum+=-(1./A[i][j])*matrixElement*x_0[j];
+                sum += -(1./A[i][i]) * matrixElement * x_0[j];
             }
-
-            vectorOut[i]=sum;
+            vectorOut[i] = sum;
         }
 
-        for(int z=0;z<size;z++){
-            x_n[z] = vectorOut[z] + (1./A[z][z])*b[z];
-            e[z] = x_n[z] - x_0[z];
-            residual[z] = fabs(A[z][0]*x_n[0] + A[z][1]*x_n[1] + A[z][2]*x_n[2] + A[z][3]*x_n[3] - b[z]);
-            x_0[z] = x_n[z];
+        for(int l = 0; l < size; l++) {
+            x_n[l] = vectorOut[l] + (1./A[l][l])*b[l];
+            e[l] = x_n[l] - x_0[l];
+            residual[l] = fabs(A[l][0]*x_n[0] + A[l][1]*x_n[1] + A[l][2]*x_n[2] + A[l][3]*x_n[3] - b[l]);
+            x_0[l] = x_n[l];
         }
-        cout<<"x_n: ";
-        for(int i=0;i<size;i++){
-            cout<<x_n[i]<<" ";
+
+        cout << "x_n: ";
+        for(int i = 0; i < size; i++) {
+            cout << x_n[i] << " ";
         }
-        cout<<endl;
+        cout << endl;
 
         cout << "e = " << norm_max(e) << "\t\t|f(x)| = " << norm_max(residual);
-        cout<<endl;
+        cout << std::endl;
 
-        if(norm_max(e)<=TOLF && norm_max(residual)<=TOLF){
-            cout<<"Zakończono na podstawie kreyterium numer 2 i 3"<<endl;
+        if(norm_max(e) <= TOLX && norm_max(residual) <= TOLF) {
+            cout << "Zakonczono z kryterium nr 2 i 3." << endl;
             return;
         }
 
-        cout<<endl;
-        cout<<endl;
+        cout << endl << endl;
     }
 }
+
 
 
 void gauss_seidel(double **A, double *x_0, const double *b, double *x_n){
