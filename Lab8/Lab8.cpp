@@ -117,7 +117,7 @@ void calculate_err(const char* filename){
 		cout << endl;
 	}
 	
-	for(int i = 1; i < METHODS; i++)
+	for(int i = 1; i <=METHODS; i++)
 		cout << "Rzad dokladnosci: " << (log10(err[3][i]) - log10(err[2][i])) / (log10(err[3][0]) - log10(err[2][0])) << endl;
 	
 	cout << endl;
