@@ -1,132 +1,131 @@
-#include<iostream>
-#include<cmath>
-#include<iomanip>
-#include<fstream>
-#define M_PI 3.14159265358979323846
+#include <cmath>
+#include <iostream>
+#include <stdio.h>
+#include <fstream>
+#include <stdlib.h>
+
+#define METHODS 9
+#define ITER 30
+
 using namespace std;
-double TOLH=1e-16;
 
+//Wz�r funkcji
 template <typename T>
-T forwardDifference2(T x, T h) {
-    return (sin(x + h) - sin(x))/h;
+T function(T x){
+	return sin(x);
 }
 
+
+//Pochodna rzeczywista
 template <typename T>
-T forwardDifference3(T x, T h) {
-    return ((T)-1.5*sin(x) + (T)2.0*sin(x + h) - (T)0.5*sin(x + (T)2.0*h))/h;
+T derivative(T x){
+	return cos(x);
 }
 
+
+//R�nica wsteczna dwupunktowa
 template <typename T>
-T backwardDifference2(T x, T h) {
-    return (sin(x) - sin(x - h))/h;
+T backward_diff_2(T x, T h){
+	return (function(x) - function(x - h)) / h;
 }
 
+
+//R�nica progresywna dwupunktowa
 template <typename T>
-T backwardDifference3(T x, T h) {
-    return ((T)0.5*sin(x - (T)2.0*h) - (T)2.0*sin(x - h) + (T)1.5*sin(x))/h;
+T forward_diff_2(T x, T h){
+	return (function(x + h) - function(x)) / h;
 }
 
+
+//R�nica centralna dwupunktowa
 template <typename T>
-T centralDifference2(T x, T h) {
-    return (sin(x+h)-sin(x-h))/((T)2.0*h);
+T central_diff_2(T x, T h){
+	return (function(x + h) - function(x - h)) / ((T)(2.0) * h);
 }
 
+
+//R�nica wsteczna 3-punktowa
 template <typename T>
-void calculateDerivatives(const string& filename) {
-
-    ofstream wyniki;
-    wyniki.open(filename);
-
-    T x1 = 0.0;
-    T x2 = M_PI/4;
-    T x3 = M_PI/2;
-
-    T x1_wart_dokladna = 1.0;
-    T x2_wart_dokladna = sqrt(2.0)/2.0;
-    T x3_wart_dokladna = 0.0;
-
-    T *rzad = new T[9];
-    T h1;
-    T h2;
-    T *w1 = new T[9];
-    T *w2 = new T[9];
-
-    T h = 0.1;
-    int i = 0;
-    while (h  > TOLH) {
-        T roz_prog_2_x1 = forwardDifference2(x1, h);
-        T roz_prog_3_x1 = forwardDifference3(x1, h);
-        T roz_wstecz_2_x2 = backwardDifference2(x2, h);
-        T roz_wstecz_3_x2 = backwardDifference3(x2, h);
-        T roz_central_2_x2 = centralDifference2(x2, h);
-        T roz_prog_2_x2 = forwardDifference2(x2, h);
-        T roz_prog_3_x2 = forwardDifference3(x2, h);
-        T roz_wstecz_2_x3 = backwardDifference2(x3, h);
-        T roz_wstecz_3_x3 = backwardDifference3(x3, h);
-/*
-        std::cout << std::setw(12) << h << std::setw(12) << roz_prog_2_x1 << std::setw(12) << roz_prog_3_x1 << std::setw(12) << roz_wstecz_2_x2 <<
-        std::setw(12) << roz_wstecz_3_x2 << std::setw(12) << roz_central_2_x2 << std::setw(12) << roz_prog_2_x2 << std::setw(12) << roz_prog_3_x2 <<
-        std::setw(12) << roz_wstecz_2_x3 << std::setw(12) << roz_wstecz_3_x3 << std::endl;
-*/
-        cout << log10(h) << " " << log10(fabs(roz_prog_2_x1 - x1_wart_dokladna)) << " " << log10(fabs(roz_prog_3_x1 - x1_wart_dokladna)) << " "
-               << log10(fabs(roz_wstecz_2_x2 - x2_wart_dokladna)) << " " << log10(fabs(roz_wstecz_3_x2 - x2_wart_dokladna)) << " "
-               <<  log10(fabs(roz_central_2_x2 - x2_wart_dokladna)) << " " <<log10(fabs(roz_prog_2_x2 - x2_wart_dokladna))  << " "
-               << log10(fabs(roz_prog_3_x2 - x2_wart_dokladna)) << " " << log10(fabs(roz_wstecz_2_x3 - x3_wart_dokladna)) << " "
-               <<  log10(fabs(roz_wstecz_3_x3 - x3_wart_dokladna)) << endl;
-
-
-        wyniki << log10(h) << " " << log10(fabs(roz_prog_2_x1 - x1_wart_dokladna)) << " " << log10(fabs(roz_prog_3_x1 - x1_wart_dokladna)) << " "
-        << log10(fabs(roz_wstecz_2_x2 - x2_wart_dokladna)) << " " << log10(fabs(roz_wstecz_3_x2 - x2_wart_dokladna)) << " "
-        <<  log10(fabs(roz_central_2_x2 - x2_wart_dokladna)) << " " <<log10(fabs(roz_prog_2_x2 - x2_wart_dokladna))  << " "
-        << log10(fabs(roz_prog_3_x2 - x2_wart_dokladna)) << " " << log10(fabs(roz_wstecz_2_x3 - x3_wart_dokladna)) << " "
-        <<  log10(fabs(roz_wstecz_3_x3 - x3_wart_dokladna)) <<endl;
-
-        if(i == 1) {
-            h1 = log10(h);
-            w1[0] = log10(fabs(roz_prog_2_x1 - x1_wart_dokladna));
-            w1[1] = log10(fabs(roz_prog_3_x1 - x1_wart_dokladna));
-            w1[2] = log10(fabs(roz_wstecz_2_x2 - x2_wart_dokladna));
-            w1[3] = log10(fabs(roz_wstecz_3_x2 - x2_wart_dokladna));
-            w1[4] = log10(fabs(roz_central_2_x2 - x2_wart_dokladna));
-            w1[5] = log10(fabs(roz_prog_2_x2 - x2_wart_dokladna));
-            w1[6] = log10(fabs(roz_prog_3_x2 - x2_wart_dokladna));
-            w1[7] = log10(fabs(roz_wstecz_2_x3 - x3_wart_dokladna));
-            w1[8] = log10(fabs(roz_wstecz_3_x3 - x3_wart_dokladna));
-        }
-        if(i == 2) {
-            h2 = log10(h);
-            w2[0] = log10(fabs(roz_prog_2_x1 - x1_wart_dokladna));
-            w2[1] = log10(fabs(roz_prog_3_x1 - x1_wart_dokladna));
-            w2[2] = log10(fabs(roz_wstecz_2_x2 - x2_wart_dokladna));
-            w2[3] = log10(fabs(roz_wstecz_3_x2 - x2_wart_dokladna));
-            w2[4] = log10(fabs(roz_central_2_x2 - x2_wart_dokladna));
-            w2[5] = log10(fabs(roz_prog_2_x2 - x2_wart_dokladna));
-            w2[6] = log10(fabs(roz_prog_3_x2 - x2_wart_dokladna));
-            w2[7] = log10(fabs(roz_wstecz_2_x3 - x3_wart_dokladna));
-            w2[8] = log10(fabs(roz_wstecz_3_x3 - x3_wart_dokladna));
-        }
-
-        h /= 2;
-        i++;
-    }
-
-    for(int l = 0; l < 9; l++) {
-        rzad[i] = fabs(w2[l]-w1[l])/fabs(h2-h1);
-        cout << rzad[i] <<endl;
-    }
-
-    wyniki.close();
+T backward_diff_3(T x, T h){
+	return (((T)(1.0 / 2.0) * function(x - (T)2.0 * h)) - ((T)(2.0) * function(x - h)) + ((T)(3.0 / 2.0) * function(x))) / h;
 }
 
-int main() {
 
-    cout << "DOUBLE: " << endl;
-    calculateDerivatives<double>("double.txt");
-    cout << endl;
-    cout << "FLOAT: " << endl;
-    calculateDerivatives<float>("float.txt");
-    cout << endl;
+//R�nica progresywna 3-punktowa
+template <typename T>
+T forward_diff_3(T x, T h){
+	return (((T)(-3.0 / 2.0) * function(x)) + ((T)(2.0) * function(x + h)) - ((T)(1.0 / 2.0) * function(x + (T)2.0 * h))) / h;
+}
 
 
-    return 0;
+//Macierz
+template <typename T>
+T **allocate(){
+	T **er = new T*[ITER];
+	
+	for(int i = 0; i < ITER; i++)
+		er[i] = new T[METHODS];
+		
+	return er;
+}
+
+
+//Zapisanie do pliku
+template <typename T>
+void create_file(T** err, const char* filename){
+	ofstream output;
+	output.open(filename);
+	
+	if(!output.good()){
+		cout << "Blad otwarcia pliku" << endl;
+		exit(1);
+	}
+	
+	for(int i = 0; i < ITER; i++){
+		for(int j = 0; j < METHODS; j++)
+			output << scientific << log10(err[i][j]) << " ";
+		output << endl;
+	}
+	output.close();
+}
+
+
+//Obliczanie b��du
+template <typename T>
+void calculate_err(const char* filename){
+	T** err = allocate<T>();
+	T h = 0.1;
+	T start = 0;
+	T end = M_PI / 2.0;
+	T center = (start + end) / 2.0;
+	
+	for(int i = 0; i < ITER; i++){
+		err[i][0] = h;
+		err[i][1] = fabs(forward_diff_2(start, h) - derivative(start));
+		err[i][2] = fabs(forward_diff_3(start, h) - derivative(start));
+        err[i][3] = fabs(backward_diff_2(center,h)- derivative(center));
+        err[i][4]= fabs(backward_diff_3(center,h)- derivative(center));
+		err[i][5] = fabs(central_diff_2(center, h) - derivative(center));
+        err[i][6]  =fabsl(forward_diff_2(center,h)- derivative(center));
+        err[i][7]   =fabs (forward_diff_3(center,h)-derivative(center));
+		err[i][8] = fabs(backward_diff_2(end, h) - derivative(end));
+		err[i][9] = fabs(backward_diff_3(end, h) - derivative(end));
+		
+		h *= (T)0.2;
+		for(int j = 0; j < METHODS; j++)
+			printf("%.6e\t", err[i][j]);
+		cout << endl;
+	}
+	
+	for(int i = 1; i < METHODS; i++)
+		cout << "Rzad dokladnosci: " << (log10(err[3][i]) - log10(err[2][i])) / (log10(err[3][0]) - log10(err[2][0])) << endl;
+	
+	cout << endl;
+	create_file(err, filename);
+}
+
+int main(){
+	calculate_err<float>("float.txt");
+	calculate_err<double>("double.txt");
+	return 0;
 }
