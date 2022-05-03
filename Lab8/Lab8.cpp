@@ -9,7 +9,7 @@
 
 using namespace std;
 
-//Wz�r funkcji
+//Wzor funkcji
 template <typename T>
 T function(T x){
 	return sin(x);
@@ -23,35 +23,35 @@ T derivative(T x){
 }
 
 
-//R�nica wsteczna dwupunktowa
+//Ronica wsteczna dwupunktowa
 template <typename T>
 T backward_diff_2(T x, T h){
 	return (function(x) - function(x - h)) / h;
 }
 
 
-//R�nica progresywna dwupunktowa
+//Ronica progresywna dwupunktowa
 template <typename T>
 T forward_diff_2(T x, T h){
 	return (function(x + h) - function(x)) / h;
 }
 
 
-//R�nica centralna dwupunktowa
+//Ronica centralna dwupunktowa
 template <typename T>
 T central_diff_2(T x, T h){
 	return (function(x + h) - function(x - h)) / ((T)(2.0) * h);
 }
 
 
-//R�nica wsteczna 3-punktowa
+//Ronica wsteczna 3-punktowa
 template <typename T>
 T backward_diff_3(T x, T h){
 	return (((T)(1.0 / 2.0) * function(x - (T)2.0 * h)) - ((T)(2.0) * function(x - h)) + ((T)(3.0 / 2.0) * function(x))) / h;
 }
 
 
-//R�nica progresywna 3-punktowa
+//Ronica progresywna 3-punktowa
 template <typename T>
 T forward_diff_3(T x, T h){
 	return (((T)(-3.0 / 2.0) * function(x)) + ((T)(2.0) * function(x + h)) - ((T)(1.0 / 2.0) * function(x + (T)2.0 * h))) / h;
@@ -90,7 +90,7 @@ void create_file(T** err, const char* filename){
 }
 
 
-//Obliczanie b��du
+//Obliczanie bledu
 template <typename T>
 void calculate_err(const char* filename){
 	T** err = allocate<T>();
