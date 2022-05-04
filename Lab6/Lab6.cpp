@@ -48,7 +48,7 @@ double *vector_l_eta(){
 //Obliczanie ety, v - wektor przechowujacy  iloczyn l[i]*eta^-1
 void calculate_eta(double **A, double *v){
 	for(int i = 1; i < N; i++){
-		v[i] = A[i][0]  / A[i - 1][1];
+		v[i] = A[i][0]  / A[i - 1][1]; // problemy z obliczeniami 
 		A[i][1] -= v[i] * A[i - 1][2];
 	}
 }

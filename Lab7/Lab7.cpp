@@ -4,27 +4,27 @@
 using namespace std;
 
 int ITERACJE=50;
-double TOLX=1e-10;
-double  TOLF=1e-10;
+double TOLX=1e-10; // zadana tolerancja błędu
+double  TOLF=1e-10; // zadana tolerancja rezduum
 
 void jacobi (double**A, double *x_0, const double *b, double *x_n){
     double *e = new double[size];
     double *residual = new double[size];
 
-    for(int n = 0; n < ITERACJE; n++) {
+    for(int n = 0; n < ITERACJE; n++) {  //tworzymy pętle główną, której ograniczeniem jest liczba iteracji
 
         double *vectorOut = new double[size];
 
         for(int i = 0; i < size; i++) {
             double sum = 0.0;
-            for(int j = 0; j < size; j++) {
+            for(int j = 0; j < size; j++) { // zerujemy elementy na przekątnej
                 double matrixElement;
                 if(i == j) {
                     matrixElement = 0;
                 } else {
-                    matrixElement = A[i][j];
+                    matrixElement = A[i][j]; // L+U bez wyrazów na przkątnej
                 }
-                sum += -(1./A[i][i]) * matrixElement * x_0[j];
+                sum += -(1./A[i][i]) * matrixElement * x_0[j]; // do postaci x[n] = (b-(L+U)*x[n-1])/D
             }
             vectorOut[i] = sum;
         }
@@ -33,7 +33,7 @@ void jacobi (double**A, double *x_0, const double *b, double *x_n){
             x_n[l] = vectorOut[l] + (1./A[l][l])*b[l];
             e[l] = x_n[l] - x_0[l];
             residual[l] = fabs(A[l][0]*x_n[0] + A[l][1]*x_n[1] + A[l][2]*x_n[2] + A[l][3]*x_n[3] - b[l]);
-            x_0[l] = x_n[l];
+            x_0[l] = x_n[l]; // zamianiamy wartości w wektorze x na nowy x
         }
 
         cout << "x_n: ";
@@ -46,7 +46,7 @@ void jacobi (double**A, double *x_0, const double *b, double *x_n){
         cout << std::endl;
 
         if(norm_max(e) <= TOLX && norm_max(residual) <= TOLF) {
-            cout << "Zakonczono z kryterium nr 2 i 3." << endl;
+            cout << "Zakonczono na podstawie kryterium nr 2 i 3." << endl;
             return;
         }
 
@@ -56,11 +56,11 @@ void jacobi (double**A, double *x_0, const double *b, double *x_n){
 
 
 
-void gauss_seidel(double **A, double *x_0, const double *b, double *x_n){
+void gauss_seidel(double **A, double *x_0, const double *b, double *x_n){ 
     double *e=new  double[size];
     double *residual =new double[size];
 
-    for(int n=0;n<ITERACJE;n++){
+    for(int n=0;n<ITERACJE;n++){ //tworzymy pętle główną, której ograniczeniem jest liczba iteracji
         double *vectorUxn=new double[size];
 
         for(int i=0;i<size;i++){
@@ -68,7 +68,7 @@ void gauss_seidel(double **A, double *x_0, const double *b, double *x_n){
             for(int j=0;j<size;j++){
                 double U_element;
                 if(i<j){
-                    U_element=A[i][j];
+                    U_element=A[i][j]; // U+D
                 }
                 else{
                     U_element=0;
@@ -80,13 +80,13 @@ void gauss_seidel(double **A, double *x_0, const double *b, double *x_n){
 
         double *y=new double[size];
         for(int z=0;z<size;z++){
-            y[z]=-vectorUxn[z]+b[z];
+            y[z]=-vectorUxn[z]+b[z]; // do postaci x[n] = (b-(L+U)*x[n-1])/D
         }
         x_n=calculateVectorL(A,y,1);
 
         for(int l=0;l<size;l++){
             e[l]=x_n[l]-x_n[l];
-            residual[l]= fabs(A[l][0]*x_n[0] + A[l][1]*x_n[1] + A[l][2]*x_n[2] + A[l][3]*x_n[3] - b[l]);
+            residual[l]= fabs(A[l][0]*x_n[0] + A[l][1]*x_n[1] + A[l][2]*x_n[2] + A[l][3]*x_n[3] - b[l]); // przemnazamy wiersze razy wektor xx i odejmujemy wektor b
             x_0[l]= x_n[l];
         }
 
@@ -113,7 +113,7 @@ void SOR(double **A, double *x_0, const double *b, double *x_n) {
     double *e = new double[size];
     double *residual = new double[size];
 
-    for(int n = 0; n < ITERACJE; n++) {
+    for(int n = 0; n < ITERACJE; n++) { //tworzymy pętle główną, której ograniczeniem jest liczba iteracji	
 
         double *vectorDUxn = new double[size];
 
@@ -141,7 +141,7 @@ void SOR(double **A, double *x_0, const double *b, double *x_n) {
 
         for(int l = 0; l < size; l++) {
             e[l] = x_n[l] - x_0[l];
-            residual[l] = fabs(A[l][0]*x_n[0] + A[l][1]*x_n[1] + A[l][2]*x_n[2] + A[l][3]*x_n[3] - b[l]);
+            residual[l] = fabs(A[l][0]*x_n[0] + A[l][1]*x_n[1] + A[l][2]*x_n[2] + A[l][3]*x_n[3] - b[l]); // przemnazamy wiersze razy wektor xx i odejmujemy wektor b
             x_0[l] = x_n[l];
         }
 
