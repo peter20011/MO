@@ -27,12 +27,6 @@ double* allocateVector(int n) {
     return new double[n];
 }
 
-void printVector(double* vector, int n) {
-    for (int i = 0; i < n; i++) {
-            cout << setw(10) << vector[i] << endl;
-    }
-}
-
 double vectorNormMax(double* v, int n) {
     double currentMax = fabs(v[0]);
 
@@ -132,7 +126,7 @@ double NumerowMethod(double h, int n) {
     getError(x, errors, h, n);
 
 
-    if (n == 150)
+    if (n == 210)
         saveToFile("Numerov.txt", x, h, n);
 
     double maxError = vectorNormMax(errors, n);
@@ -159,7 +153,7 @@ double conventionalMethod(double h, int n) {
     Thomas(L, D, U, b, x, n);
     getError(x, errors, h, n);
 
-    if (n == 150)
+    if (n == 210)
         saveToFile("Conventional.txt", x, h, n);
 
     double maxError = vectorNormMax(errors, n);
