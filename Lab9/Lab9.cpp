@@ -43,14 +43,14 @@ double analytical(double x) {
 
 void Thomas(double* L, double* D, double* U, double* b, double* x, int n) {
     for (int i = 1; i < n; i++) 
-        D[i] -= (U[i] * L[i - 1]) / D[i - 1];
+        D[i] -= (U[i-1] * L[i]) / D[i - 1];
 
     for (int i = 1; i < n; i++)
-        b[i] -= (U[i] * b[i - 1]) / D[i - 1];
+        b[i] -= (L[i] * b[i - 1]) / D[i - 1];
 
     x[n - 1] = b[n - 1] / D[n -1];
     for (int i = n - 2; i >= 0; i--)
-        x[i] = (b[i] - L[i] * x[i + 1]) / D[i];
+        x[i] = (b[i] - U[i] * x[i + 1]) / D[i];
 }
 
 void fillConventionalMatrix(double* L, double* D, double* U, double* b, double h, int n) {
