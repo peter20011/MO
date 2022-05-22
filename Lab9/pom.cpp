@@ -1,63 +1,66 @@
-#include<iostream>
-#include<fstream>
-#include<cmath>
-
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+#define START 0.0
+#define STOP 1.0
 using namespace std;
 
 
-//rownanie analityczne
+double* allocateVector(int n) {
+    return new double[n];
+}
 
-double rownanieAnalityczne(double x){
-    return ( exp( 2.0-2.0*x ) - 4*exp( 4.0 - x * 2.0  )+ 4*exp( x * 2.0 ) - exp( 2.0 + 2.0*x ) - x + x*exp(4.0)) / ( 4.0 - 4*exp(4.0) );
+void printVector(double* vector, int n) {
+    for (int i = 0; i < n; i++) {
+            cout << setw(10) << vector[i] << endl;
+    }
+}
+
+double vectorNormMax(double* v, int n) {
+    double currentMax = fabs(v[0]);
+
+    for (int i = 1; i < n; i++)
+        if (fabs(v[i]) > currentMax)
+            currentMax = fabs(v[i]);
+
+    return currentMax;
+}
+
+double analytical(double x) {
+    return (exp(2.0 - 2.0 * x) - 4.0 * exp(4.0 - 2.0 * x) + 4.0 * exp(2.0 * x) - exp(2.0 + 2.0 * x) - x + x * exp(4.0)) / (4.0 - 4.0 * exp(4.0));
 }
 
 
-//funkcja wykonująca algorytm Thomasa na zadanych wektorach, ponieważ zadana macierz jest trójdiagonalna
+void Thomas(double* L, double* D, double* U, double* b, double* x, int n) {
+    for (int i = 1; i < n; i++) 
+        D[i] -= (U[i] * L[i - 1]) / D[i - 1];
 
-void Thomas(double *l, double *d, double *u, double *b, double *x, int N){
-    double *dKopia= new double [N];
-    double  *bKopia= new double [N];
+    for (int i = 1; i < n; i++)
+        b[i] -= (U[i] * b[i - 1]) / D[i - 1];
 
-    //zmienne pomocnicze
-    dKopia[0]=d[0];
-    bKopia[0]=b[0];
-
-    // przekształcenie Algorytm THOOMASA
-    for(int i=1;i<N;i++){
-       dKopia[i] = d[i] - (l[i] * u[i - 1]) /dKopia[i - 1];
-    }
-
-    for (int i = 1; i < N; i++) 
-	{
-        bKopia[i] = b[i] - (l[i] * bKopia[i - 1] )/ dKopia[i - 1];
-    }
-
-    x[N-1]=bKopia[N-1]/dKopia[N-1];
-
-    
-    for (int i = N - 2; i >= 0; i--)
-	{
-         x[i] = (bKopia[i] - u[i] * x[i + 1]) / dKopia[i];
-    }
-
-    //Usuwamy niepotrzebne tymczasowe wektory
-    delete[] bKopia; 
-	delete[] dKopia;
-
-
+    x[n - 1] = b[n - 1] / D[n -1];
+    for (int i = n - 2; i >= 0; i--)
+        x[i] = (b[i] - L[i] * x[i + 1]) / D[i];
 }
 
+void saveToFile(string fileName, double* x, double h, int n) {
+    ofstream file;
+    file.open(fileName, ios::out);
+    if (!file.good())
+        exit(EXIT_FAILURE);
 
-int najwiekszyBlad( double *blad, int N ) //wyznaczanie indeksu największego błędu
-{
-    //pierwszym maksimum jest pierwszy element tablicy blad, potem porównyjemy
-	double maksymalny = fabs( blad[0] ); 
-	int naj;
-	for ( int i = 0; i < N; i++ )
-		if ( fabs( blad[i] ) > maksymalny )
-		{
-		maksymalny = fabs(blad[i]);
-		}
-	return maksymalny;
+    double x_n = START;
+    for (int i = 0; i < n; i++) {
+        file << x_n << " " << x[i] << " " << analytical(x_n) << endl;
+        x_n += h;
+    }
 }
+void getError(double* x, double* errors, double h, int n) {
+    double x_n = START;
 
+    for (int i = 0; i < n; i++) {
+        errors[i] = fabs(x[i] - analytical(x_n));
+        x_n += h;
+    }
+}
