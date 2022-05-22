@@ -1,150 +1,193 @@
-#include<iostream>
+#define _USE_MATH_DEFINES 
 #include <cmath>
+#include <iomanip>
+#include <iostream>
 #include <fstream>
-#include "/mnt/c/Users/User/Desktop/Zajęcia/MO/Lab9/pom.cpp"
+
+// ZADANE FUNKCJE
+#define P 1.0
+#define R -4.0
+
+#define ALPHA 0.0
+#define BETA 1.0
+#define GAMMA -1.0
+
+// ZADANE WSPOLCZYNNIKI
+#define FI 0.0
+#define PSI 1.0
+#define THETA 0.0
+
+// OBSZAR ROZWIAZANIA
+#define START 0.0
+#define STOP 1.0
+
 using namespace std;
 
-double p = 1.0, q = 0.0, r = -4.0; //współczynniki w równaniu
-double alfa = 0.0, beta = 1.0, gamma1 = -1.0; //współczynniki z warunków brzegowych
-double fi = 0.0, psi = 1.0, teta = 0.0; 
-double poczatekPrzedzialu = 0.0, koniecPrzedzialu = 1.0; 
+double* allocateVector(int n) {
+    return new double[n];
+}
 
-double Numerowa( double h, int N ) 
-{
-	double *l, *d, *u, *b, *x, *blad, xp1 = poczatekPrzedzialu, xp2 = poczatekPrzedzialu; 
-	fstream numerow, analitycznie;
-	numerow.open( "wynikiNumerow.txt", ios_base::app ); //otwieramy pliki do zapisu wyników wyliczeń analitycznych oraz z Numerowa
-	analitycznie.open( "wynikiAnalitycznie.txt", ios_base::app);
-	analitycznie << scientific;
-	numerow << scientific;
-	cout.precision(10);
-	l = new double[N]; 
-	d = new double[N];
-	u = new double[N];
-	b = new double[N];
-	x = new double[N];
-	blad = new double[N];
+void printVector(double* vector, int n) {
+    for (int i = 0; i < n; i++) {
+            cout << setw(10) << vector[i] << endl;
+    }
+}
 
-	u[0] = alfa / h; //zgodnie z wzorami uzupełniamy wartości pierwszych wyrazów, które są inne niż pozostałe
-	d[0] = beta - alfa / h;
-	b[0] = -gamma1;
-	
-	for(int i = 1; i < N - 1; i++) //w pętli uzupełniamy wyrazy środkowe
-	{
-		l[i - 1] = p / (h * h) + r / 12.0;
-		d[i] = (-2.0 * p) / (h * h) + r * (10.0 / 12.0);
-		u[i] = p / (h * h) + r / 12.0;
-		b[i] = (xp1 + i * h - h) / 12.0 + (10.0 / 12.0) *  (xp1 + i * h) + (xp1 + i * h + h) / 12.0;
-	}
+double vectorNormMax(double* v, int n) {
+    double currentMax = fabs(v[0]);
 
-	l[N - 2] = -fi / h; //końcowe wyrazy mają także specjalne dane
-	d[N - 1] = -fi / h + psi;
-	b[N - 1] = -teta;
+    for (int i = 1; i < n; i++)
+        if (fabs(v[i]) > currentMax)
+            currentMax = fabs(v[i]);
 
-	Thomas( l, d, u, b, x, N ); //wykonujemy algorytm Thomasa na wyliczonych danych
+    return currentMax;
+}
 
-	for ( int i = 0; i < N; i++ ) //obliczamy błąd bezwzględny między wyliczeniami Numerowa, a rozwiązaniem analitycznym
-	{
-		blad[i] = fabs( x[i] - rownanieAnalityczne( xp2 ) );
-		xp2 += h;
-	}
-	int naj = najwiekszyBlad(blad, N); //znajdujemy największy błąd
-	
-	if(N==162) //losowa liczba
- 	{
- 		for ( int i = 0; i < N; i++ )
-		{
-			numerow<<xp1<<"\t"<<x[i]<<"\t"<<endl;
-			analitycznie<<xp1<<"\t"<<rownanieAnalityczne( xp1)<<endl;
-			xp1 += h;
-		}
+double analytical(double x) {
+    return (exp(2.0 - 2.0 * x) - 4.0 * exp(4.0 - 2.0 * x) + 4.0 * exp(2.0 * x) - exp(2.0 + 2.0 * x) - x + x * exp(4.0)) / (4.0 - 4.0 * exp(4.0));
+}
+
+void Thomas(double* L, double* D, double* U, double* b, double* x, int n) {
+    for (int i = 1; i < n; i++) 
+        D[i] -= (U[i] * L[i - 1]) / D[i - 1];
+
+    for (int i = 1; i < n; i++)
+        b[i] -= (U[i] * b[i - 1]) / D[i - 1];
+
+    x[n - 1] = b[n - 1] / D[n -1];
+    for (int i = n - 2; i >= 0; i--)
+        x[i] = (b[i] - L[i] * x[i + 1]) / D[i];
+}
+
+void fillConventionalMatrix(double* L, double* D, double* U, double* b, double h, int n) {
+    L[0] = 0.0;
+    D[0] = BETA - (ALPHA / h);
+    U[0] = ALPHA / h;
+    b[0] = (-1) * GAMMA;
+
+    for (int i = 1; i < n - 1; i++) {
+        L[i] = P / (h * h);
+        D[i] = R + (-2.0 * P) / (h * h);
+        U[i] = P / (h * h);
+        b[i] = i * h;
     }
 
-
-	delete[] l; //usuwamy niepotrzebne wektory
-	delete[] d;
-	delete[] u;
-	delete[] x;
-	delete[] b;
-	analitycznie.close(); //zamykamy pliki
-	numerow.close();
-	return naj; //zwracamy największy błąd
+    L[n - 1] = -FI / h;
+    D[n - 1] = -FI / h + PSI;
+    U[n - 1] = 0.0;
+    b[n - 1] = (-1) * THETA;
 }
 
-double konwencjonalnaTrzypunktowa( double h, int N ) //funkcja realizująca dyskretyzację konwencjonalną trzypunktową
-{
-	double *l, *d, *u, *b, *x, *blad, xp1 = poczatekPrzedzialu, xp2 = poczatekPrzedzialu; //wykonujemy analogiczne operacje jak w Numerowa
-	fstream konwencjonalnie;
-	konwencjonalnie.open( "wynikiKonwencjonalnie.txt", ios_base::app);
-	konwencjonalnie << scientific;
-	cout.precision(10);
-	l = new double[N];
-	d = new double[N];
-	u = new double[N];
-	b = new double[N];
-	x = new double[N];
-	blad = new double[N];
+void fillNumerovMatrix(double* L, double* D, double* U, double* b, double h, int n) {
+    L[0] = 0.0;
+    D[0] = BETA - (ALPHA / h);
+    U[0] = ALPHA / h;
+    b[0] = (-1) * GAMMA;
 
-	u[0] = alfa / h;
-	d[0] = beta - alfa / h;
-	b[0] = -gamma1;
-
-	for ( int i = 1; i < N - 1; i++ )
-	{
-		l[i - 1] = p / ( h * h ) - r / ( 2.0 * h ); //inne wartości w środku
-		d[i] = ( -2.0 * p ) / ( h *h ) + r;
-		u[i] = p / ( h * h ) + q / ( 2.0 * h );
-		b[i] = (xp1+i*h); //nasze s
-	}
-
-	l[N - 2] = -fi / h;
-	d[N - 1] = -fi / h + psi;
-	b[N - 1] = -teta;
-
-	Thomas( l, d, u, b, x, N );
-
-	for ( int i = 0; i < N; i++ )
-	{
-		blad[i] = fabs( x[i] -rownanieAnalityczne( xp2 ) );
-		xp2 += h;
-	}
-	
- 	int naj = najwiekszyBlad(blad, N);
- 	if(N==162) //losowa liczba
- 	{
- 		for ( int i = 0; i < N; i++ )
-		{
-			konwencjonalnie<<xp1<<"\t"<<x[i]<<endl;
-			xp1 += h;
-		}
+    for (int i = 1; i < n - 1; i++) {
+        L[i] = P / (h * h) + R / 12.0;
+        D[i] = (-2.0 * P) / (h * h) + R * (10.0 / 12.0);
+        U[i] = P / (h * h) + R / 12.0;
+        b[i] = (i * h - h) / 12.0 + (10.0 / 12.0) * (i * h) + (i * h + h) / 12.0;
     }
 
-	delete[] l;
-	delete[] d;
-	delete[] u;
-	delete[] x;
-	delete[] b;
-
-	return naj;
+    L[n - 1] = -FI / h;
+    D[n - 1] = -FI / h + PSI;
+    U[n - 1] = 0.0;
+    b[n - 1] = (-1) * THETA;
 }
 
-int main() //funkcja główna
+void getError(double* x, double* errors, double h, int n) {
+    double x_n = START;
+
+    for (int i = 0; i < n; i++) {
+        errors[i] = fabs(x[i] - analytical(x_n));
+        x_n += h;
+    }
+}
+
+void saveToFile(string fileName, double* x, double h, int n) {
+    ofstream file;
+    file.open(fileName, ios::out);
+    if (!file.good())
+        exit(EXIT_FAILURE);
+
+    double x_n = START;
+    for (int i = 0; i < n; i++) {
+        file << x_n << " " << x[i] << " " << analytical(x_n) << endl;
+        x_n += h;
+    }
+}
+
+double NumerowMethod(double h, int n) {
+    double* L = allocateVector(n);
+    double* D = allocateVector(n);
+    double* U = allocateVector(n);
+    double* b = allocateVector(n);
+    double* x = allocateVector(n);
+    double* errors = allocateVector(n);
+
+    fillNumerovMatrix(L, D , U, b, h, n);
+    Thomas(L, D, U, b, x, n);
+    getError(x, errors, h, n);
+
+
+    if (n == 150)
+        saveToFile("Numerov.txt", x, h, n);
+
+    double maxError = vectorNormMax(errors, n);
+
+    delete[] L;
+    delete[] D;
+    delete[] U;
+    delete[] b;
+    delete[] x;
+    delete[] errors;
+
+    return maxError;
+}
+
+double conventionalMethod(double h, int n) {
+    double* L = allocateVector(n);
+    double* D = allocateVector(n);
+    double* U = allocateVector(n);
+    double* b = allocateVector(n);
+    double* x = allocateVector(n);
+    double* errors = allocateVector(n);
+
+    fillConventionalMatrix(L, D, U, b, h, n);
+    Thomas(L, D, U, b, x, n);
+    getError(x, errors, h, n);
+
+    if (n == 150)
+        saveToFile("Conventional.txt", x, h, n);
+
+    double maxError = vectorNormMax(errors, n);
+
+    delete[] L;
+    delete[] D;
+    delete[] U;
+    delete[] b;
+    delete[] x;
+    delete[] errors;
+
+    return maxError;
+}
+
+int main()
 {
-	double h, bladNum, bladKonw;
-	int N; //ilość iteracji
+    ofstream errors;
+    errors.open("errors.txt", ios::out);
+    errors << scientific;
 
-	fstream bledy, rzedy;
-	bledy.open( "bledy.txt", fstream::out );
-	bledy << scientific; //ustawienie precyzji
-	cout.precision(10);
-	
-	for ( N = 2 ; N < 5000; N += 80)
-	{
-		h = ( koniecPrzedzialu - poczatekPrzedzialu ) / ( N-1 );
-		bladKonw = ( konwencjonalnaTrzypunktowa( h, N ) );
-		bladNum =( Numerowa( h, N ) );
-		bledy<<log10(h)<<"\t"<<log10(bladKonw)<<"\t"<<log10(bladNum)<<endl;
-	}
-	bledy.close();
-	return 0;
+    double h;
+
+    for (int i = 10; i < 200000; i += 100) {
+        h = (STOP - START) / (i - 1);
+        errors << setw(16) << log10(h) << " " << setw(16) << log10(conventionalMethod(h, i)) << " " << setw(16) << log10(NumerowMethod(h, i)) << endl;
+    }
+
+    errors.close();
+    return 0;
 }
+
