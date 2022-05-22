@@ -102,7 +102,7 @@ double KMB(double x_min, double x_max, double tmax, double h, double dt){
     return ex_time;
 }
 
-double Laasonen(double x_min, double x_max, double tmax, double h, double dt){
+double Laasonen_Tom(double x_min, double x_max, double tmax, double h, double dt){
         int count_x = (int) ((x_max - x_min) / h),
             tcount = (int) (tmax / dt),
             ex_time = clock(),
@@ -154,3 +154,5 @@ double Laasonen(double x_min, double x_max, double tmax, double h, double dt){
     ex_time = clock() - ex_time;
     return ex_time;
 }
+
+double Laasonen_SOR(double x_min, double x_max, double tmax, double h, double dt)
