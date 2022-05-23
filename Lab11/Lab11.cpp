@@ -8,8 +8,6 @@
 #define D 1
 #define TETA 0.1
 #define TMAX 2
-#define ITERACJE 100
-#define EPSILON 1e-16
 using namespace std;
 
 //rozwiąznie analityczne pomijamy D
@@ -89,7 +87,7 @@ double KMB(double x_min, double x_max, double tmax, double h, double dt){
     }
     //zapis do pliku
     double **tmp=anal_solution(x_min,x_min,tmax,h,dt);
-      print_err22(tmp, "Klasyczna bezposrednia", u, count_x, count_x, x_min, h, dt);
+    print_err22(tmp, "Klasyczna bezposrednia",u,count_x,count_t,x_min,h, dt);
 
     for(i=0;i<count_x; i++){
         delete u[i],tmp[i];
@@ -102,7 +100,8 @@ double KMB(double x_min, double x_max, double tmax, double h, double dt){
 }
 
 double Laasonen_Tom(double x_min, double x_max, double tmax, double h, double dt){
-        int count_x = (int) ((x_max - x_min) / h), count_t = (int) (tmax / dt),ex_time = clock(),i;
+    int count_x = (int) ((x_max - x_min) / h);
+    int count_t = (int) (tmax / dt),ex_time = clock(),i;
     double **result = new double*[count_t],
             *l = new double[count_x - 1],
             *d = new double[count_x],
@@ -127,7 +126,7 @@ double Laasonen_Tom(double x_min, double x_max, double tmax, double h, double dt
     d[count_x - 1] = 1;
 
     Thomas_dist(l, d, u, count_x); //1-wszy etap alg Thomasa
-    for (i = 1; i < tcount; i++) {
+    for (i = 1; i < count_t; i++) {
         for (int j = 1; j < count_x - 1; j++) {
             b[j] = -result[i - 1][j];
         }
@@ -142,7 +141,7 @@ double Laasonen_Tom(double x_min, double x_max, double tmax, double h, double dt
     //zapis do pliku
     double **tmp = anal_solution(x_min, x_max, tmax, h, dt);
 
-    for (i = 0; i < tcount; i++) {
+    for (i = 0; i < count_t; i++) {
         delete result[i], tmp[i];
     }
     delete result, tmp;
@@ -159,7 +158,7 @@ int main(){
     while (h>0.009)
     {
         cout << h<<"\t";
-        KMB(-x_min,x_max,TMAX,h,dt);
+        KMB(-x_max,x_max,TMAX,h,dt);
         cout<<endl;
         h=h*0.7;
         dt=0.4*h*h/D;
@@ -170,7 +169,7 @@ int main(){
     cout<<"Lassonen+Thomas"<<endl;
     while(h>0.009){
         cout<<h<<"\t";
-        Laasonen_Tom(-xmax, xmax, TMAX, h, dt);
+        Laasonen_Tom(-x_max, x_max, TMAX, h, dt);
         cout<<endl;
         h=h*0.7;
         dt = h * h / D;

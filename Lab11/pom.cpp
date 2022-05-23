@@ -11,76 +11,6 @@ inline double rel_err(double calculated, double exact) {//Funkcja oblicza blad w
     else return (exact - calculated) / exact;
 }
 
-int print_m(const char arg0[], double** arg1, int imax, int jmax, double xpocz, double h, double dt) {
-    // static int numer;
-    fstream out;
-    char nn [25];
-    nn[0] = numer + 48;
-    nn[1] = '.';
-    int i;
-    for (i = 2; i < 20; i++) {
-        nn[i] = arg0[i - 2];
-        if (!arg0[i - 2]) break;
-    }
-    nn[i] = '.';
-    nn[i + 1] = 't';
-    nn[i + 2] = 'x';
-    nn[i + 3] = 't';
-    nn[i + 4] = 0;
-    out.open(nn, fstream::out);
-    if (out.bad()) {
-        return 0;
-    }
-    out << arg0 << "\th=" << h << "\tdt=" << dt << "\n x/t \t";
-    for (int j = 0; j < jmax; j++) {
-        out << j * dt << "\t";
-    }
-    for (int i = 0; i < imax; i++) {
-        out << "\n";
-        out << xpocz + h * i << "\t";
-        for (int j = 0; j < jmax; j++) {
-            out << arg1[i][j] << "\t";
-        }
-    }
-    out.close();
-    return 1;
-}
-
-int print_m(const char arg0[], int imax, int jmax, double** arg1, double xpocz, double h, double dt) {
-    // static int numer;
-    fstream out;
-    char nn [25];
-    nn[0] = numer + 48;
-    nn[1] = '.';
-    int i;
-    for (i = 2; i < 20; i++) {
-        nn[i] = arg0[i - 2];
-        if (!arg0[i - 2]) break;
-    }
-    nn[i] = '.';
-    nn[i + 1] = 't';
-    nn[i + 2] = 'x';
-    nn[i + 3] = 't';
-    nn[i + 4] = 0;
-    out.open(nn, fstream::out);
-    if (out.bad()) {
-        return 0;
-    }
-    out << arg0 << "\th=" << h << "\tdt=" << dt << "\n x/t \t";
-    for (int j = 0; j < imax; j++) {
-        out << j * dt << "\t";
-    }
-    for (int i = 0; i < jmax; i++) {
-        out << "\n";
-        out << xpocz + h * i << "\t";
-        for (int j = 0; j < imax; j++) {
-            out << arg1[j][i] << "\t";
-        }
-    }
-    return 1;
-}
-
-
 int print_err(double **anal, const char arg0[], int imax, int jmax, double** arg1, double xpocz, double h, double dt) {
     // static int numer;
     fstream out;
@@ -184,7 +114,7 @@ int print_err22(double **anal, const char arg0[], double** arg1, int imax, int j
     cout<<max<<", ";
 }
 
-int print_err2(double **anal, const char arg0[], int imax, int jmax, double** arg1, double xpocz, double h, double dt) {
+void print_err2(double **anal, const char arg0[], int imax, int jmax, double** arg1, double xpocz, double h, double dt) {
     double max=-DBL_MAX;
     for (int i = 0; i < jmax-1; i++) {
         for (int j = 0; j < imax-1; j++) {
