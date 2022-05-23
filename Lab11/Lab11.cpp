@@ -3,6 +3,8 @@
 #include <cmath>
 #include <fstream>
 #include <time.h>
+#include<cmath>
+#include "/mnt/c/Users/User/Desktop/Zajęcia/MO/Lab11/pom.cpp"
 #define D 1
 #define TETA 0.1
 #define TMAX 2
@@ -87,7 +89,7 @@ double KMB(double x_min, double x_max, double tmax, double h, double dt){
     }
     //zapis do pliku
     double **tmp=anal_solution(x_min,x_min,tmax,h,dt);
-    //zapis do pliku
+      print_err22(tmp, "Klasyczna bezposrednia", u, count_x, count_x, x_min, h, dt);
 
     for(i=0;i<count_x; i++){
         delete u[i],tmp[i];
@@ -100,8 +102,8 @@ double KMB(double x_min, double x_max, double tmax, double h, double dt){
 }
 
 double Laasonen_Tom(double x_min, double x_max, double tmax, double h, double dt){
-        int count_x = (int) ((x_max - x_min) / h),count_t = (int) (tmax / dt),ex_time = clock(),i;
-    double **result = new double*[tcount],
+        int count_x = (int) ((x_max - x_min) / h), count_t = (int) (tmax / dt),ex_time = clock(),i;
+    double **result = new double*[count_t],
             *l = new double[count_x - 1],
             *d = new double[count_x],
             *b = new double[count_x],
@@ -139,7 +141,6 @@ double Laasonen_Tom(double x_min, double x_max, double tmax, double h, double dt
 
     //zapis do pliku
     double **tmp = anal_solution(x_min, x_max, tmax, h, dt);
-    //zapis do pliku 
 
     for (i = 0; i < tcount; i++) {
         delete result[i], tmp[i];
@@ -148,93 +149,6 @@ double Laasonen_Tom(double x_min, double x_max, double tmax, double h, double dt
     ex_time = clock() - ex_time;
     return ex_time;
 }
-
-void SOR(double **A, double *x_0, const double *b, double *x_n) {
-    double omega = 1./2.;
-    double *e = new double[size];
-    double *residual = new double[size];
-
-    for(int n = 0; n < ITERACJE; n++) { //tworzymy pętle główną, której ograniczeniem jest liczba iteracji	
-
-        double *vectorDUxn = new double[size];
-
-        for(int i = 0; i < size; i++) {
-            double sum = 0.0;
-            for(int j = 0; j < size; j++) {
-                double U_Element = 0;
-                if(i < j) {
-                    U_Element = A[i][j];
-                } else if (i == j) {
-                    U_Element = (1 - 1./omega) * A[i][j];
-                }
-                sum += U_Element * x_0[j];
-            }
-            vectorDUxn[i] = sum;
-        }
-
-        double *y = new double[size];
-
-        for(int l = 0; l < size; l++) {
-            y[l] = -vectorDUxn[l] + b[l];
-        }
-
-        x_n = calculateVectorL(A, y, omega);
-
-        for(int l = 0; l < size; l++) {
-            e[l] = x_n[l] - x_0[l];
-            residual[l] = fabs(A[l][0]*x_n[0] + A[l][1]*x_n[1] + A[l][2]*x_n[2] + A[l][3]*x_n[3] - b[l]); // przemnazamy wiersze razy wektor xx i odejmujemy wektor b
-            x_0[l] = x_n[l];
-        }
-
-        cout << "x_n: ";
-        for(int i = 0; i < size; i++) {
-            cout << x_n[i] << " ";
-        }
-        cout << endl;
-
-        cout << "e = " << norm_max(e) << "\t\t|f(x)| = " << norm_max(residual);
-        cout << endl;
-
-        if(norm_max(e) <= TOLX && norm_max(residual) <= TOLF) {
-             cout<<"Zakończono na podstawie kreyterium numer 2 i 3"<<endl;
-            return;
-        }
-
-        cout << endl;
-        cout << endl;
-    }
-}
-
-double *calculateVectorL(double **L, const double* vectorB, double omega){
-    double *temp=new double[size];
-    temp[0] = vectorB[0]/(L[0][0]*(1./omega));
-    for(int i=1;i<size;i++){
-        double sum=0;
-        for(int j=0;j<i;j++){
-            sum+=L[i][j]*temp[j];
-        }
-
-       temp[i] = (vectorB[i] - sum)/(L[i][i]*((1./omega)));
-    }
-
-    return temp;
-}
-
-double norm_max(double *vector){
-    double biggest=fabs(vector[0]);
-    for(int i=0;i<3;i++){
-        if(fabs(vector[i]>biggest)){
-            biggest=fabs(vector[i]);
-        }
-    }
-
-    return biggest;
-}
-
-double Laasonen_SOR(double x_min, double x_max, double tmax, double h, double dt){
-    int count_x = (int) ((x_max - x_min) / h),tcount = (int) (tmax / dt),ex_time = clock(),i;
-}
-
 
 int main(){
     double x_max=6*pow(D*(TETA+TMAX),(double)1/2);
