@@ -2,14 +2,25 @@
 #include<fstream>
 #include<cmath>
 #include<string>
+const double D=1.0;
+const double TAU=0.1;
+const double TMAX=2.0;
+const double TMIN=0.0;
+const double A=6*sqrt(D*(TAU+TMAX))+0.1; // wychodzi 8,6948 , iborę trochę większe dodaję 0.01
+const double LAMBDA_POSREDNIE=1.0;
+const double LAMBDA_BEZPOSREDNIE=0.4;
+const double XMIN=-A;
+const double XMAX=A;
+const double H=0.1;
+
 
 using namespace std;
 
-double *utwórz_wektor(int n){
+double *utworz_wektor(int n){
     return new double[n];
 }
 
-double** utwórz_macierz(int n, int m){
+double** utworz_macierz(int n, int m){
     double **macierz=new double*[n];
 
     for(int i=0;i<n; i++){
@@ -75,4 +86,73 @@ double norma_max(double *wektor, int n) {
     }
   }
   return max;
+}
+
+double **obliczBlad(double **dokladne, double **przyblizenie, int n, int m) {
+  double **blad = utworz_macierz(n, m);
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      blad[i][j] = fabs(przyblizenie[i][j] - dokladne[i][j]);
+    }
+  }
+
+  return blad;
+}
+
+
+double *maxBlad(double **blad, int n, int m) {
+  double *wynik = utworz_wektor(n);
+
+  for (int i = 0; i < n; i++)
+    wynik[i] = norma_max(blad[i], m);
+
+  return wynik;
+}
+
+double obliczDT(double lambda, double h, double d) {
+  return (lambda * h * h) / d;
+}
+
+
+double *obliczOdstepyH(double dt, int n, int m) {
+  double *wynik = utworz_wektor(m);
+  double x = XMIN;
+
+  for (int i = 0; i < m; i++) {
+    wynik[i] = x;
+    x += H;
+  }
+
+  return wynik;
+}
+
+
+double *obliczOdstepyDT(double dt, int n, int m) {
+  double *wynik = utworz_wektor(n);
+  double t = TMIN;
+
+  for (int i = 0; i < n; i++) {
+    wynik[i] = t;
+    t += dt;
+  }
+
+  return wynik;
+}
+
+void zapiszDwaWektory(double *wektor1, double *wektor2, int n, string nazwa_pliku) {
+  fstream file(nazwa_pliku.c_str(), ios::out);
+
+  if (file.is_open()) {
+    for (int i = 0; i < n; i++) {
+      file << wektor1[i] << "\t" << wektor2[i] << endl;
+    }
+  }
+}
+
+void zapiszRozwiazanie_zad2(double **macierz, double *wektorKroki, int rozmiar, int pozycja, string nazwaPliku) {
+  double *temp = utworz_wektor(rozmiar);
+  for (int i = 0; i < rozmiar; ++i) {
+    temp[i] = macierz[pozycja][i];
+  }
+  zapiszDwaWektory(wektorKroki, temp, rozmiar, nazwaPliku);
 }
