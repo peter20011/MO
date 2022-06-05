@@ -11,8 +11,6 @@ double U_anal(double x, double t){
     return exp((-(x*x))/(4.0*D*(TAU+t)))*1./(2*pow(M_PI*D*(TAU+t),1./2));
 }
 
-
-
 void warunek_brzegowy(double** macierz, int n, int m){
     for(int i=1;i<n;i++){
         macierz[i][0]=0.0;
@@ -47,7 +45,7 @@ double ** rozwiazanie_analityczne(int n, int m,double h, double dt){
 
 }
 void algorytmThomasa(double *l, double *d, double *u, double *b, double *x, int m) {
-  for (int i = 2; i < m; ++i) {
+  for (int i = 1; i < m; ++i) {
     d[i] = d[i] - (l[i - 1] / d[i - 1]) * u[i - 1];
     b[i] = b[i] - (l[i - 1] / d[i - 1]) * b[i - 1];
   }
@@ -75,7 +73,7 @@ void mlThomas(double **macierz, int n, int m) {
       l[i] = LAMBDA_POSREDNIE;
       d[i] = -L_LAMBDA;
       u[i] = LAMBDA_POSREDNIE;
-      b[i] = -macierz[k - 1][i];
+      b[i] = -macierz[k - 1][i]; // zmiana 
     }
 
     l[m - 1] = 0.0;
@@ -94,6 +92,98 @@ void mlThomas(double **macierz, int n, int m) {
   usun_wektor(u);
   usun_wektor(b);
  usun_wektor(x);
+}
+
+
+void SOR( double **macierz, double *b,double *x,int n, int m){
+
+  double TOL=1e-16;
+  double *x_nowy_wektor=utworz_wektor(m);
+  double *x_pomocniczy= utworz_wektor(m);
+  double sum = 0;
+  for(int i = 0; i < m; i++){
+    x_pomocniczy[i]=0;
+  }
+    for(int iter = 0; iter < ITERACJE; iter++){
+
+        for(int i = 0; i < m; i++){
+
+            double temp=0;
+
+            for(int j = 0; j < m; j++){
+                if(j>i){
+                    temp += -macierz[i][j] * x[j];
+                }
+                if(j==i){
+                    temp += -( (1. - 1./OMEGA) * macierz[i][j]) * x[j];
+                }
+            }
+
+            temp +=b[i];
+            x_nowy_wektor[i] = temp;
+        }
+
+        for(int i = 0; i < m; i++){
+            double temp=0;
+            for(int j = 0; j < m; j++){
+                if(j<i) {
+                    temp += macierz[i][j] * x_pomocniczy[j];
+                }
+            }
+            x_pomocniczy[i] = (x_nowy_wektor[i] - temp)/((1./OMEGA)*macierz[i][i]);
+        }
+        for (int i = 0; i < m; i++) {
+            x[i] = x_pomocniczy[i];
+        }
+            if ((fabs((norma_max(residuum(macierz, b, x, m), m))) < TOL) && (fabs((estymator(x_pomocniczy, x, m))) < TOL))
+            {
+              break;
+            }
+}
+}
+
+
+void mlSor(double **macierz, int n, int m){
+  double tempLabda = 1.0 + 2.0 * LAMBDA_POSREDNIE;
+  double *b = new double[m];
+  double *wynik = new double[m];
+  double **tempMacierz = new double *[m]; // poprawa
+
+  for (int i = 0; i < m; i++) {
+    b[i] = 0;
+    wynik[i] = 0.0;
+  }
+
+  for (int i = 0; i < m; i++){
+    tempMacierz[i] = new double[m];
+  }
+
+    for (int i = 0; i < m; i++) {
+    for (int j = 0; j < m; j++)
+      tempMacierz[i][j] = 0.0;
+  }
+
+ for (int k = 1; k < n; k++) {
+    tempMacierz[0][0] = 1.0;
+    b[0] = 0;
+
+    for (int i = 1; i < m - 1; i++) {
+      tempMacierz[i][i] = -tempLabda;
+      tempMacierz[i][i + 1] = LAMBDA_POSREDNIE;
+      tempMacierz[i][i - 1] = LAMBDA_POSREDNIE;
+      b[i] = -macierz[k - 1][i];
+      
+    }
+    b[m - 1] = 0.0;
+    tempMacierz[m - 1][m - 1] = 1.0;
+
+    SOR(tempMacierz, b, wynik, m, m);
+
+    for (int i = 1; i < m - 1; i++)
+      macierz[k][i] = wynik[i];
+  }
+
+
 }
 
 
@@ -124,6 +214,14 @@ double **mlThomasRozwiazanie(int n, int m) {
   return laasonen_thomas;
 }
 
+double **mlSorRozwiazanie(int n, int m){
+  double **rozwiazanie = utworz_macierz(n, m);
+  warunek_poczatkowy(rozwiazanie, n, m);
+  warunek_brzegowy(rozwiazanie, n, m);
+  mlSor(rozwiazanie, n, m);
+  return rozwiazanie;
+}
+
 int main(){
 double dt = obliczDT(LAMBDA_BEZPOSREDNIE, H, D);
   int n = ((TMAX - TMIN) / dt);
@@ -131,6 +229,7 @@ double dt = obliczDT(LAMBDA_BEZPOSREDNIE, H, D);
   double **rozwiazanieAnalityczne;
   double **rozwiazanieKmb;
   double **rozwiazanieLaasonenThomas;
+  double **rozwiazanieLaasonenSOR;
   double **macierzBledy;
   double *wektorBledy;
   double *odstepDT;
@@ -175,10 +274,28 @@ double dt = obliczDT(LAMBDA_BEZPOSREDNIE, H, D);
   zapiszWektor(odstepDT, n, "odstepyCzasoweLaasonenThomas.csv");
 
   zapiszRozwiazanie_zad2(rozwiazanieLaasonenThomas, odstepX, m, 84, "1rozLT.csv");
+  // Laasonem + SOR
+  dt = obliczDT(LAMBDA_POSREDNIE, H, D);
+  n = ((TMAX - TMIN) / dt);
+  m = ((XMAX - XMIN) / H);
+  rozwiazanieLaasonenSOR = mlSorRozwiazanie(n, m);
+  zapiszMacierz(rozwiazanieLaasonenSOR , n, m, "laasonenSorRozwiazanie.csv");
 
+  macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieLaasonenSOR , n, m);
+  wektorBledy = maxBlad(macierzBledy, n, m);
+  zapiszWektor(wektorBledy, n, "maxErrLaasonenSOR.csv");
+  zapiszMacierz(macierzBledy, n, m, "errLaasonenSOR.csv");
+
+  odstepX = obliczOdstepyH(dt, n, m);
+  odstepDT = obliczOdstepyDT(dt, n, m);
+  zapiszWektor(odstepX, n, "odstepyXLaasonenSOR.csv");
+  zapiszWektor(odstepDT, n, "odstepyCzasoweLaasonenSOR.csv");
+
+  zapiszRozwiazanie_zad2(rozwiazanieLaasonenSOR, odstepX, m, 84, "1rozLSOR.csv");
 
 usun_macierz(rozwiazanieAnalityczne, n);
 usun_macierz(rozwiazanieLaasonenThomas, n);
+usun_macierz(rozwiazanieLaasonenSOR, n);
 usun_macierz(macierzBledy, n);
 usun_wektor(wektorBledy);
 usun_wektor(odstepX);

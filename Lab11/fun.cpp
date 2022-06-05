@@ -6,13 +6,14 @@ const double D=1.0;
 const double TAU=0.1;
 const double TMAX=2.0;
 const double TMIN=0.0;
-const double A=6*sqrt(D*(TAU+TMAX))+0.1; // wychodzi 8,6948 , iborę trochę większe dodaję 0.01
+const double A=6*sqrt(D*(TAU+TMAX))+0.1; // wychodzi 8,6948 , borę trochę większe dodaję 0.01
 const double LAMBDA_POSREDNIE=1.0;
 const double LAMBDA_BEZPOSREDNIE=0.4;
 const double XMIN=-A;
 const double XMAX=A;
-const double H=0.1;
-
+const double H=0.05;
+const double OMEGA=0.2;
+const int ITERACJE=50;
 
 using namespace std;
 
@@ -149,10 +150,44 @@ void zapiszDwaWektory(double *wektor1, double *wektor2, int n, string nazwa_plik
   }
 }
 
-void zapiszRozwiazanie_zad2(double **macierz, double *wektorKroki, int rozmiar, int pozycja, string nazwaPliku) {
+void zapiszRozwiazanie_zad2(double **macierz, double *wektorKroki, int rozmiar, int pozycja, std::string nazwaPliku) {
   double *temp = utworz_wektor(rozmiar);
   for (int i = 0; i < rozmiar; ++i) {
     temp[i] = macierz[pozycja][i];
   }
   zapiszDwaWektory(wektorKroki, temp, rozmiar, nazwaPliku);
+}
+
+double estymator(double *xNowe, double *xPoprzednie, int m) {
+  double max = 0.0;
+  double *p = new double[m];
+
+  for (int i = 0; i < m; i++)
+    p[i] = xNowe[i] - xPoprzednie[i];
+
+  if (fabs(p[0]) > fabs(p[1]))
+    max = fabs(p[0]);
+  else
+    max = fabs(p[1]);
+
+  for (int i = 0; i < m; i++) {
+    if (fabs(p[i]) > max)
+      max = fabs(p[i]);
+  }
+
+  delete[] p;
+  return max;
+}
+
+double *residuum(double **macierz, double *b, double *x, int m) {
+  double sum = 0.0;
+  double *wynik = new double[m];
+  for (int i = 0; i < m; i++) {
+    for (int j = 0; j < m; j++) {
+      sum += macierz[i][j] * x[j];
+    }
+    wynik[i] = sum - b[i];
+    sum = 0.0;
+  }
+  return wynik;
 }
