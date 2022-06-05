@@ -11,9 +11,9 @@ const double LAMBDA_POSREDNIE=1.0;
 const double LAMBDA_BEZPOSREDNIE=0.4;
 const double XMIN=-A;
 const double XMAX=A;
-const double H=0.05;
-const double OMEGA=0.2;
-const int ITERACJE=50;
+const double H=0.1;
+const double OMEGA=0.9;
+const int ITERACJE=100;
 
 using namespace std;
 
