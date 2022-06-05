@@ -3,9 +3,10 @@
 #include<cmath>
 #include<string>
 #include "/mnt/c/Users/User/Desktop/Zajęcia/MO/Lab11/fun.cpp"
-#define TOLX 10e-16
-#define TOLF 10e-16
 using namespace std;
+
+
+#define wykres1
 
 double U_anal(double x, double t){
     return exp((-(x*x))/(4.0*D*(TAU+t)))*1./(2*pow(M_PI*D*(TAU+t),1./2));
@@ -293,6 +294,49 @@ double dt = obliczDT(LAMBDA_BEZPOSREDNIE, H, D);
 
   zapiszRozwiazanie_zad2(rozwiazanieLaasonenSOR, odstepX, m, 84, "1rozLSOR.csv");
 
+  #ifdef wykres1
+  double h = 0.25;
+  int w = 100;
+  double *wykres1_kmb = utworz_wektor(w);
+  double *wykres1_LT = utworz_wektor(w);
+  double *wykres1_LSOR = utworz_wektor(w);
+  double *wykres1_kroki = utworz_wektor(w);
+
+
+  for (int i = 0; i < w; ++i) {
+    dt = obliczDT(LAMBDA_BEZPOSREDNIE, h, D);
+    n = ((TMAX - TMIN) / dt);
+    m = ((XMAX - XMIN) / h);
+
+    rozwiazanieAnalityczne =rozwiazanie_analityczne(n, m, h, dt);
+
+    rozwiazanieKmb = kmbRozwiazanie(n, m);
+    macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieKmb, n, m);
+    wektorBledy = maxBlad(macierzBledy, n, m);
+    wykres1_kmb[i] = log10(fabs(wektorBledy[n - 1]));
+
+    dt = obliczDT(LAMBDA_POSREDNIE, h, D);
+    n = ((TMAX - TMIN) / dt);
+
+    rozwiazanieLaasonenThomas = mlThomasRozwiazanie(n, m);
+    macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieLaasonenThomas, n, m);
+    wektorBledy = maxBlad(macierzBledy, n, m);
+    wykres1_LT[i] = log10(fabs(wektorBledy[n - 1]));
+
+    rozwiazanieLaasonenSOR = mlSorRozwiazanie(n, m);
+    macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieLaasonenSOR, n, m);
+    wektorBledy = maxBlad(macierzBledy, n, m);
+    wykres1_LSOR[i] = log10(fabs(wektorBledy[n - 1]));
+
+    wykres1_kroki[i] = log10(h);
+    h = h /1.001;
+  }
+
+  zapiszDwaWektory( wykres1_kroki, wykres1_kmb, w, "wykres1_1.csv");
+  zapiszDwaWektory(wykres1_kroki, wykres1_LT, w, "wykres1_2.csv");
+  zapiszDwaWektory(wykres1_kroki, wykres1_LSOR, w, "wykres1_3.csv");
+#endif
+
 usun_macierz(rozwiazanieAnalityczne, n);
 usun_macierz(rozwiazanieLaasonenThomas, n);
 usun_macierz(rozwiazanieLaasonenSOR, n);
@@ -300,5 +344,16 @@ usun_macierz(macierzBledy, n);
 usun_wektor(wektorBledy);
 usun_wektor(odstepX);
 usun_wektor(odstepDT);
+
+
+
+#ifdef wykres1
+  usun_wektor(wykres1_kmb);
+  usun_wektor(wykres1_LT);
+  usun_wektor(wykres1_LSOR);
+  usun_wektor(wykres1_kroki);
+#endif
+
+return 0;
 
 }
