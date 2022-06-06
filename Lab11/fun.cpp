@@ -44,7 +44,7 @@ void usun_macierz(double** macierz, int n){
     delete[] macierz;
 }
 
-void zapiszWektor(double *wektor, int n, string nazwapliku) {
+void zapisz_wektor(double *wektor, int n, string nazwapliku) {
   fstream file(nazwapliku.c_str(), ios::out);
 
   if (file.is_open()) {
@@ -54,7 +54,7 @@ void zapiszWektor(double *wektor, int n, string nazwapliku) {
   }
 }
 
-void zapiszWektor2(double *wektor_1,double* wektor_2 ,int n,string nazwapliku){
+void zapisz_wektor2(double *wektor_1,double* wektor_2 ,int n,string nazwapliku){
    fstream file(nazwapliku.c_str(), ios::out);
 
   if (file.is_open()) {
@@ -64,7 +64,7 @@ void zapiszWektor2(double *wektor_1,double* wektor_2 ,int n,string nazwapliku){
   }
 }
 
-void zapiszMacierz(double **matrix, int n, int m, string nazwapliku) {
+void zapisz_macierz(double **matrix, int n, int m, string nazwapliku) {
   fstream file(nazwapliku.c_str(), ios::out);
 
   if (file.is_open()) {
@@ -89,7 +89,7 @@ double norma_max(double *wektor, int n) {
   return max;
 }
 
-double **obliczBlad(double **dokladne, double **przyblizenie, int n, int m) {
+double **oblicz_blad(double **dokladne, double **przyblizenie, int n, int m) {
   double **blad = utworz_macierz(n, m);
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < m; j++) {
@@ -101,7 +101,7 @@ double **obliczBlad(double **dokladne, double **przyblizenie, int n, int m) {
 }
 
 
-double *maxBlad(double **blad, int n, int m) {
+double *max_blad(double **blad, int n, int m) {
   double *wynik = utworz_wektor(n);
 
   for (int i = 0; i < n; i++)
@@ -140,7 +140,7 @@ double *obliczOdstepyDT(double dt, int n, int m) {
   return wynik;
 }
 
-void zapiszDwaWektory(double *wektor1, double *wektor2, int n, string nazwa_pliku) {
+void zapisz_dwa_wektory(double *wektor1, double *wektor2, int n, string nazwa_pliku) {
   fstream file(nazwa_pliku.c_str(), ios::out);
 
   if (file.is_open()) {
@@ -150,12 +150,12 @@ void zapiszDwaWektory(double *wektor1, double *wektor2, int n, string nazwa_plik
   }
 }
 
-void zapiszRozwiazanie_zad2(double **macierz, double *wektorKroki, int rozmiar, int pozycja, std::string nazwaPliku) {
+void zapisz_rozwiazanie_zad2(double **macierz, double *wektorKroki, int rozmiar, int pozycja, std::string nazwaPliku) {
   double *temp = utworz_wektor(rozmiar);
   for (int i = 0; i < rozmiar; ++i) {
     temp[i] = macierz[pozycja][i];
   }
-  zapiszDwaWektory(wektorKroki, temp, rozmiar, nazwaPliku);
+  zapisz_dwa_wektory(wektorKroki, temp, rozmiar, nazwaPliku);
 }
 
 double estymator(double *xNowe, double *xPoprzednie, int m) {

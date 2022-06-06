@@ -239,22 +239,22 @@ double dt = obliczDT(LAMBDA_BEZPOSREDNIE, H, D);
   //analityczne
 
     rozwiazanieAnalityczne = rozwiazanie_analityczne(n, m, H, dt);
-     zapiszMacierz(rozwiazanieAnalityczne, n, m, "rozwiazanieAnalityczne.csv");
+     zapisz_macierz(rozwiazanieAnalityczne, n, m, "rozwiazanie_Analityczne.csv");
 
    //KMB
    rozwiazanieKmb = kmbRozwiazanie(n, m);
-  zapiszMacierz(rozwiazanieKmb, n, m, "rozwiazanieKmb.csv");
- macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieKmb, n, m);
-  wektorBledy = maxBlad(macierzBledy, n, m);
-  zapiszWektor(wektorBledy, n, "maxErrKmb.csv");
-  zapiszMacierz(macierzBledy, n, m, "errMacierzKmb.csv");
+  zapisz_macierz(rozwiazanieKmb, n, m, "rozwiazanie_Kmb.csv");
+ macierzBledy = oblicz_blad(rozwiazanieAnalityczne, rozwiazanieKmb, n, m);
+  wektorBledy = max_blad(macierzBledy, n, m);
+  zapisz_wektor(wektorBledy, n, "max_Err_Kmb.csv");
+  zapisz_macierz(macierzBledy, n, m, "err_Macierz_Kmb.csv");
 
   odstepX = obliczOdstepyH(dt, n, m);
   odstepDT = obliczOdstepyDT(dt, n, m);
-  zapiszWektor(odstepDT, n, "odstepyCzasoweKmb.csv");
-  zapiszWektor(odstepX, n, "odstepyXKmb.csv");
-  zapiszRozwiazanie_zad2(rozwiazanieKmb, odstepX, m, 84, "1rozKMB.csv");
-  zapiszRozwiazanie_zad2(rozwiazanieAnalityczne, odstepX, m, 84, "1rozAnalityczne.csv");
+  zapisz_wektor(odstepDT, n, "odstepy_Czasowe_Kmb.csv");
+  zapisz_wektor(odstepX, n, "odstepy_X_Kmb.csv");
+  zapisz_rozwiazanie_zad2(rozwiazanieKmb, odstepX, m, 84, "1_roz_KMB.csv");
+  zapisz_rozwiazanie_zad2(rozwiazanieAnalityczne, odstepX, m, 84, "1_roz_Analityczne.csv");
   
   // Metoda Posrednia Laasonem + Algorytm Thomasa
   dt = obliczDT(LAMBDA_POSREDNIE, H, D);
@@ -262,37 +262,37 @@ double dt = obliczDT(LAMBDA_BEZPOSREDNIE, H, D);
   m = ((XMAX - XMIN) / H);
 
   rozwiazanieLaasonenThomas = mlThomasRozwiazanie(n, m);
-  zapiszMacierz(rozwiazanieLaasonenThomas, n, m, "laasonenThomasRozwiazanie.csv");
+  zapisz_macierz(rozwiazanieLaasonenThomas, n, m, "laasonen_Thomas_Rozwiazanie.csv");
 
-  macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieLaasonenThomas, n, m);
-  wektorBledy = maxBlad(macierzBledy, n, m);
-  zapiszWektor(wektorBledy, n, "maxErrLaasonenThomas.csv");
-  zapiszMacierz(macierzBledy, n, m, "errLaasonenThomas.csv");
+  macierzBledy = oblicz_blad(rozwiazanieAnalityczne, rozwiazanieLaasonenThomas, n, m);
+  wektorBledy = max_blad(macierzBledy, n, m);
+  zapisz_wektor(wektorBledy, n, "max_Err_Laasonen_Thomas.csv");
+  zapisz_macierz(macierzBledy, n, m, "err_Laasonen_Thomas.csv");
 
   odstepX = obliczOdstepyH(dt, n, m);
   odstepDT = obliczOdstepyDT(dt, n, m);
-  zapiszWektor(odstepX, n, "odstepyXLaasonenThomas.csv");
-  zapiszWektor(odstepDT, n, "odstepyCzasoweLaasonenThomas.csv");
+  zapisz_wektor(odstepX, n, "odstepy_X_Laasonen_Thomas.csv");
+  zapisz_wektor(odstepDT, n, "odstepy_Czasowe_Laasonen_Thomas.csv");
 
-  zapiszRozwiazanie_zad2(rozwiazanieLaasonenThomas, odstepX, m, 84, "1rozLT.csv");
+  zapisz_rozwiazanie_zad2(rozwiazanieLaasonenThomas, odstepX, m, 84, "1_roz_Lass_Thom.csv");
   // Laasonem + SOR
   dt = obliczDT(LAMBDA_POSREDNIE, H, D);
   n = ((TMAX - TMIN) / dt);
   m = ((XMAX - XMIN) / H);
   rozwiazanieLaasonenSOR = mlSorRozwiazanie(n, m);
-  zapiszMacierz(rozwiazanieLaasonenSOR , n, m, "laasonenSorRozwiazanie.csv");
+  zapisz_macierz(rozwiazanieLaasonenSOR , n, m, "laasonen_Sor_Rozwiazanie.csv");
 
-  macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieLaasonenSOR , n, m);
-  wektorBledy = maxBlad(macierzBledy, n, m);
-  zapiszWektor(wektorBledy, n, "maxErrLaasonenSOR.csv");
-  zapiszMacierz(macierzBledy, n, m, "errLaasonenSOR.csv");
+  macierzBledy = oblicz_blad(rozwiazanieAnalityczne, rozwiazanieLaasonenSOR , n, m);
+  wektorBledy = max_blad(macierzBledy, n, m);
+  zapisz_wektor(wektorBledy, n, "max_Err_LaasonenSOR.csv");
+  zapisz_macierz(macierzBledy, n, m, "err_Laasonen_SOR.csv");
 
   odstepX = obliczOdstepyH(dt, n, m);
   odstepDT = obliczOdstepyDT(dt, n, m);
-  zapiszWektor(odstepX, n, "odstepyXLaasonenSOR.csv");
-  zapiszWektor(odstepDT, n, "odstepyCzasoweLaasonenSOR.csv");
+  zapisz_wektor(odstepX, n, "odstepy_X_Laasonen_SOR.csv");
+  zapisz_wektor(odstepDT, n, "odstepy_Czasowe_Laasonen_SOR.csv");
 
-  zapiszRozwiazanie_zad2(rozwiazanieLaasonenSOR, odstepX, m, 84, "1rozLSOR.csv");
+  zapisz_rozwiazanie_zad2(rozwiazanieLaasonenSOR, odstepX, m, 84, "1_roz_Las_SOR.csv");
 
   #ifdef wykres1
   double h = 0.25;
@@ -311,30 +311,30 @@ double dt = obliczDT(LAMBDA_BEZPOSREDNIE, H, D);
     rozwiazanieAnalityczne =rozwiazanie_analityczne(n, m, h, dt);
 
     rozwiazanieKmb = kmbRozwiazanie(n, m);
-    macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieKmb, n, m);
-    wektorBledy = maxBlad(macierzBledy, n, m);
+    macierzBledy = oblicz_blad(rozwiazanieAnalityczne, rozwiazanieKmb, n, m);
+    wektorBledy = max_blad(macierzBledy, n, m);
     wykres1_kmb[i] = log10(fabs(wektorBledy[n - 1]));
 
     dt = obliczDT(LAMBDA_POSREDNIE, h, D);
     n = ((TMAX - TMIN) / dt);
 
     rozwiazanieLaasonenThomas = mlThomasRozwiazanie(n, m);
-    macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieLaasonenThomas, n, m);
-    wektorBledy = maxBlad(macierzBledy, n, m);
+    macierzBledy = oblicz_blad(rozwiazanieAnalityczne, rozwiazanieLaasonenThomas, n, m);
+    wektorBledy = max_blad(macierzBledy, n, m);
     wykres1_LT[i] = log10(fabs(wektorBledy[n - 1]));
 
     rozwiazanieLaasonenSOR = mlSorRozwiazanie(n, m);
-    macierzBledy = obliczBlad(rozwiazanieAnalityczne, rozwiazanieLaasonenSOR, n, m);
-    wektorBledy = maxBlad(macierzBledy, n, m);
+    macierzBledy = oblicz_blad(rozwiazanieAnalityczne, rozwiazanieLaasonenSOR, n, m);
+    wektorBledy = max_blad(macierzBledy, n, m);
     wykres1_LSOR[i] = log10(fabs(wektorBledy[n - 1]));
 
     wykres1_kroki[i] = log10(h);
     h = h /1.001;
   }
 
-  zapiszDwaWektory( wykres1_kroki, wykres1_kmb, w, "wykres1_1.csv");
-  zapiszDwaWektory(wykres1_kroki, wykres1_LT, w, "wykres1_2.csv");
-  zapiszDwaWektory(wykres1_kroki, wykres1_LSOR, w, "wykres1_3.csv");
+  zapisz_dwa_wektory( wykres1_kroki, wykres1_kmb, w, "wykres11.csv");
+  zapisz_dwa_wektory(wykres1_kroki, wykres1_LT, w, "wykres12.csv");
+  zapisz_dwa_wektory(wykres1_kroki, wykres1_LSOR, w, "wykres13.csv");
 #endif
 
 usun_macierz(rozwiazanieAnalityczne, n);
