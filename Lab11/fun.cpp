@@ -2,192 +2,78 @@
 #include<fstream>
 #include<cmath>
 #include<string>
-const double D=1.0;
-const double TAU=0.1;
-const double TMAX=2.0;
-const double TMIN=0.0;
-const double A=6*sqrt(D*(TAU+TMAX))+0.1; // wychodzi 8,6948 , biorę trochę większe dodaję 0.1
-const double LAMBDA_POSREDNIE=1.0;
-const double LAMBDA_BEZPOSREDNIE=0.4;
-const double XMIN=-A;
-const double XMAX=A;
-const double H=0.1;
-const double OMEGA=0.9;
-const int ITERACJE=100;
+#include<fstream>
+#include <algorithm>
+const double D = 1.0;
+const double TAU = 0.1;
+const double TMIN = 0.0;
+const double TMAX = 2.0;
+const double A = 6*sqrt(D*(TAU+TMIN))+0.1;
+const double XMIN = -A;
+const double XMAX = A;
+const double LAMBDA_BEZPOSREDNIE = 0.4;
+const double LAMBDA_POSREDNIE = 1.0;
+const double h = 0.10;
+
 
 using namespace std;
 
-double *utworz_wektor(int n){
-    return new double[n];
+//Zapisywanie do pliku na wygląd siatki czasowo-przestrzennej
+void zapisz_do_pliku(const string &nazwa_pliku, double **macierz, int n, int m) {
+    ofstream out;
+    out.open("../" + nazwa_pliku);
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            out << macierz[i][j] << " ";
+        }
+        out << "\n";
+    }
+    out.close();
 }
 
-double** utworz_macierz(int n, int m){
-    double **macierz=new double*[n];
-
-    for(int i=0;i<n; i++){
-        macierz[i]=new double[m];
+//alokowanie macierzy
+double **alokowanie_macierzy(int n, int m) {
+    auto **macierz = new double *[n];
+    for (int i = 0; i < n; i++) {
+        macierz[i] = new double[m];
     }
-
     return macierz;
 }
 
-void usun_wektor(double *wektor){
-    delete [] wektor;
-}
-
-void usun_macierz(double** macierz, int n){
-    for(int i=0;i<n; i++)
-    {
+//dealokowanie macierzy
+void  usuwanie_macierzy(double **macierz, int n) {
+    for (int i = 0; i < n; i++) {
         delete[] macierz[i];
     }
-
     delete[] macierz;
 }
 
-void zapisz_wektor(double *wektor, int n, string nazwapliku) {
-  fstream file(nazwapliku.c_str(), ios::out);
-
-  if (file.is_open()) {
+//wyliczanie maxError dla każdego t
+double *najwiekszy_blad(double **blad, int n, int m) {
+    double najwiekszy_blad;
+    auto *bledy = new double[n];
     for (int i = 0; i < n; i++) {
-      file << wektor[i] << endl;
+        najwiekszy_blad = fabs(blad[i][0]);
+        for (int j = 0; j < m; j++) {
+            if (najwiekszy_blad < fabs(blad[i][j])) {
+                najwiekszy_blad = fabs(blad[i][j]);
+            }
+        }
+        bledy[i] = najwiekszy_blad;
     }
-  }
+    return bledy;
 }
 
-void zapisz_wektor2(double *wektor_1,double* wektor_2 ,int n,string nazwapliku){
-   fstream file(nazwapliku.c_str(), ios::out);
-
-  if (file.is_open()) {
+//obliczanie błędu bezwzględnego dla rozwiązania numerycznego
+void obliczanie_bledu(double **blad, double **analityczne, double **numerycznie, int n, int m) {
     for (int i = 0; i < n; i++) {
-      file << wektor_1[i] << "\t" << wektor_2[i] << endl;
+        for (int j = 0; j < m; j++) {
+            blad[i][j] = fabs(numerycznie[i][j] - analityczne[i][j]);
+        }
     }
-  }
 }
 
-void zapisz_macierz(double **matrix, int n, int m, string nazwapliku) {
-  fstream file(nazwapliku.c_str(), ios::out);
-
-  if (file.is_open()) {
-    for (int i = 0; i < n; ++i) {
-      for (int j = 0; j < m; ++j) {
-        file << matrix[i][j] << ";";
-      }
-      file << "\n";
-    }
-  }
-
-  file.close();
-}
-
-double norma_max(double *wektor, int n) {
-  double max = fabs(wektor[0]);
-  for (int i = 1; i < n; i++) {
-    if (max < fabs(wektor[i])) {
-      max = wektor[i];
-    }
-  }
-  return max;
-}
-
-double **oblicz_blad(double **dokladne, double **przyblizenie, int n, int m) {
-  double **blad = utworz_macierz(n, m);
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < m; j++) {
-      blad[i][j] = fabs(przyblizenie[i][j] - dokladne[i][j]);
-    }
-  }
-
-  return blad;
-}
-
-
-double *max_blad(double **blad, int n, int m) {
-  double *wynik = utworz_wektor(n);
-
-  for (int i = 0; i < n; i++)
-    wynik[i] = norma_max(blad[i], m);
-
-  return wynik;
-}
-
-double obliczDT(double lambda, double h, double d) {
-  return (lambda * h * h) / d;
-}
-
-
-double *obliczOdstepyH(double dt, int n, int m) {
-  double *wynik = utworz_wektor(m);
-  double x = XMIN;
-
-  for (int i = 0; i < m; i++) {
-    wynik[i] = x;
-    x += H;
-  }
-
-  return wynik;
-}
-
-
-double *obliczOdstepyDT(double dt, int n, int m) {
-  double *wynik = utworz_wektor(n);
-  double t = TMIN;
-
-  for (int i = 0; i < n; i++) {
-    wynik[i] = t;
-    t += dt;
-  }
-
-  return wynik;
-}
-
-void zapisz_dwa_wektory(double *wektor1, double *wektor2, int n, string nazwa_pliku) {
-  fstream file(nazwa_pliku.c_str(), ios::out);
-
-  if (file.is_open()) {
-    for (int i = 0; i < n; i++) {
-      file << wektor1[i] << "\t" << wektor2[i] << endl;
-    }
-  }
-}
-
-void zapisz_rozwiazanie_zad2(double **macierz, double *wektorKroki, int rozmiar, int pozycja, std::string nazwaPliku) {
-  double *temp = utworz_wektor(rozmiar);
-  for (int i = 0; i < rozmiar; ++i) {
-    temp[i] = macierz[pozycja][i];
-  }
-  zapisz_dwa_wektory(wektorKroki, temp, rozmiar, nazwaPliku);
-}
-
-double estymator(double *xNowe, double *xPoprzednie, int m) {
-  double max = 0.0;
-  double *p = new double[m];
-
-  for (int i = 0; i < m; i++)
-    p[i] = xNowe[i] - xPoprzednie[i];
-
-  if (fabs(p[0]) > fabs(p[1]))
-    max = fabs(p[0]);
-  else
-    max = fabs(p[1]);
-
-  for (int i = 0; i < m; i++) {
-    if (fabs(p[i]) > max)
-      max = fabs(p[i]);
-  }
-
-  delete[] p;
-  return max;
-}
-
-double *residuum(double **macierz, double *b, double *x, int m) {
-  double sum = 0.0;
-  double *wynik = new double[m];
-  for (int i = 0; i < m; i++) {
-    for (int j = 0; j < m; j++) {
-      sum += macierz[i][j] * x[j];
-    }
-    wynik[i] = sum - b[i];
-    sum = 0.0;
-  }
-  return wynik;
+//wyliczenie kroku czasowego dla podanej wartości lambda oraz kroku przestrzennego
+double oblicz_dt(double lambda) {
+    return (lambda * h * h) / D;
 }
