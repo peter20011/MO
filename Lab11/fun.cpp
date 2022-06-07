@@ -9,14 +9,14 @@ const double TAU = 0.1;
 
 const double t_min = 0.0;
 const double t_max = 2.0;
-const double a = 6*sqrt(D*(TAU+t_max));
+const double a = 6*sqrt(D*(TAU+t_max))+0.1;
 const double x_start =-a ;
 const double x_end = a;
 
 const double lambda_kmb = 0.4;
 const double lambda_laasonen = 1.0;
 
-const double h = 0.05; //0.025 dla Laasonen-Thomas, 0.03 dla KM, 0.04 dla Laasonen-SOR
+const double h = 0.025; 
 
 using namespace std;
 
@@ -78,4 +78,25 @@ void countErrors(double **error, double **analytical, double **numerical, int n,
 //wyliczenie kroku czasowego dla podanej wartości lambda oraz kroku przestrzennego
 double getDelta_t(double lambda) {
     return (lambda * h * h) / D;
+}
+
+bool error(double *xn, double *xn_1, int m) {
+    int count = 0;
+
+    for (int i = 0; i < m; i++) {
+        if (fabs(xn_1[i] - xn[i]) < 1e-10) count++;
+    }
+    return count == m;
+}
+
+bool residue(double **A, double *b, const double *xn, int m) {
+    int count = 0;
+    for (int i = 0; i < m; i++) {
+        double sum = 0.0;
+        for (int j = 0; j < m; j++) {
+            sum += A[i][j] * xn[j];
+        }
+        if (fabs(sum - b[i]) < 1e-10) count++;
+    }
+    return count == m;
 }
