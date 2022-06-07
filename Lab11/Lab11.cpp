@@ -4,9 +4,8 @@
 #include <cmath>
 #include <algorithm>
 #include "/mnt/c/Users/User/Desktop/Zajęcia/MO/Lab11/fun.cpp"
-using namespace std;
 
- //0.025 dla Laasonen-Thomas, 0.03 dla KM, 0.04 dla Laasonen-SOR
+using namespace std;
 
 double U_anal(double x,double t){
     return (1./(sqrt(M_PI*D*(TAU+t))))*exp(-(x*x)/(4*D*(t+TAU)));
@@ -14,21 +13,21 @@ double U_anal(double x,double t){
 
 
 //wyliczanie rozwiązań analitycznych
-double **analytical(int n, int m, double dt) {
-    double **wyniki = alokowanie_macierzy(n, m);
+double **analytical(int n, int m, double delta_t) {
+    double **results = allocMatrix(n, m);
 
-    double x = TMIN;
-    double t = TMAX;
+    double x = x_start;
+    double t = t_min;
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            wyniki[i][j] =  U_anal(x,t);
+            results[i][j] = U_anal(x,t);
             x += h;
         }
-        x = TMIN;
-        t += dt;
+        x = x_start;
+        t += delta_t;
     }
-    return wyniki;
+    return results;
 }
 
 //wyliczanie rozwiązań numerycznych dla metody KMB
@@ -36,22 +35,25 @@ double **analytical(int n, int m, double dt) {
 // m - liczba kroków przestrzennych
 // delta_t - wyliczone z lambda*h^2/D dla lambda = 0.4, D = 1
 double **KMB(int n, int m, double delta_t) {
-    double **wynik = alokowanie_macierzy(n, m); //macierz reprezentująca siatke czasowo-przestrzenną
-    double x = XMIN;
+    double **results = allocMatrix(n, m); //macierz reprezentująca siatke czasowo-przestrzenną
+    double x = x_start;
     for (int i = 0; i < m; i++) {
-        wynik[0][i] = U_anal(x,0);  //warunek początkowy
-        x+=h;
+        results[0][i] = U_anal(x,0); 
+        x+= h; 
     }
+
 
     for (int i = 0; i < n; i++) {
-        wynik[i][0] = 0.0;  //warunek brzegowy U(r,t)
-        wynik[i][m - 1] = 0.0; //warunek brzegowy U(r+a,t)
+        results[i][0] = 0.0;  //warunek brzegowy U(r,t)
+        results[i][m - 1] = 0.0;
+ 
     }
 
-     x = x_start;
+    x = x_start;
     for (int k = 1; k < n; k++) {
         for (int i = 1; i < m - 1; i++) {
-            results[k][i] = results[k - 1][i]+ lambda_kmb * (results[k - 1][i - 1] - (2 *  results[k - 1][i]) +  results[k - 1][i + 1]);
+                results[k][i] = results[k - 1][i]+ lambda_kmb * (results[k - 1][i - 1] - (2 *  results[k - 1][i]) +  results[k - 1][i + 1]);
+            x += h;
             x += h;
         }
         x = x_start;
@@ -90,8 +92,8 @@ double **LaasonenThomas(int n, int m, double delta_t) {
     double **matrixA = allocMatrix(n, m); //macierz reprezentująca siatkę czasowo-przestrzenną
     double x = x_start;
     for (int i = 0; i < m; i++) {
-        matrixA[0][i] = U_anal(x,0);    //warunek początkowy
-        x += h;
+        matrixA[0][i] = U_anal(x,0);   
+        x+=h; //warunek początkowy
     }
 
 
@@ -109,8 +111,8 @@ double **LaasonenThomas(int n, int m, double delta_t) {
         b[0] = matrixA[k - 1][0]; //gamma = 0, pierwszy warunek brzegowy
         for (int i = 1; i < m - 1; i++) {
             lower[i] = lambda_laasonen; // wyliczone w sprawozdaniu
-            diagonal[i] = -(1.0 + 2.0 * lambda_laasonen + (2.0 * h * lambda_laasonen) / x);
-            upper[i] = lambda_laasonen + (2.0 * h * lambda_laasonen) / x;
+            diagonal[i] = -(1.0 + 2.0 * lambda_laasonen );
+            upper[i] = lambda_laasonen;
             b[i] = -matrixA[k - 1][i]; //b[i] = -U_(n-1,k)
             x += h;
         }
@@ -165,7 +167,7 @@ void sor(double **matrix, double *b, double *x, int m) {
         approx[i] = 1.0; //ponieważ w poprzednich metodach wychodziło 1 to dałem przybliżenie początkowe 1
     }
 
-    for (int limit = 0; limit < 100; limit++) { //arbitralne ograniczenie na liczbe iteracji
+    for (int limit = 0; limit < 10000; limit++) { //arbitralne ograniczenie na liczbe iteracji
         for (int i = 0; i < m; i++) {
             double tmp = ((1.0 - 1.0 / omega) * matrix[i][i]) * approx[i]; // ((1- 1/omega)D*x_n-1
 
@@ -216,13 +218,14 @@ double **LaasonenSOR(int n, int m, double delta_t) {
     }
     double x = x_start;
     for (int i = 0; i < m; i++) {
-        matrixA[0][i] = U_anal(x,0); //warunek początkowy
-        x+= h;
+        matrixA[0][i] = U_anal(x,0);
+        x += h;
     }
 
     for (int i = 0; i < n; i++) {   //warunki brzegowe
         matrixA[i][0] = 0.0;
         matrixA[i][m - 1] = 0.0;
+
     }
 
     double t = t_min;
@@ -233,13 +236,13 @@ double **LaasonenSOR(int n, int m, double delta_t) {
         for (int i = 1; i < m - 1; i++) {
             matrix[i][i - 1] = lambda_laasonen; //wyliczone w sprawozdaniu
             matrix[i][i] = -(1.0 + 2.0 * lambda_laasonen);
-            matrix[i][i + 1] = lambda_laasonen ;
+            matrix[i][i + 1] = lambda_laasonen;
             b[i] = -matrixA[k - 1][i]; ////b[i] = -U_(n-1,k)
             x += h;
         }
         x = x_start;
         matrix[m - 1][m - 1] = 1.0; // dn: psi = 1
-        b[m - 1] = 0; // 2 warunek brzegowy
+        b[m - 1] = 0.0; /// 2 warunek brzegowy
         t += delta_t;
 
         sor(matrix, b, results, m); // metoda iteracyjne sor do obliczena ukladu rownan
@@ -273,9 +276,9 @@ void KMB_save() {
 
 
     ofstream file1, file2, file3;
-    file1.open("../kmb100.txt");
-    file2.open("../kmb300.txt");
-    file3.open("../kmb400.txt");
+    file1.open("../kmb125.txt");
+    file2.open("../kmb250.txt");
+    file3.open("../kmb500.txt");
 
 
     double x = x_start;
@@ -294,7 +297,6 @@ void KMB_save() {
         file2 << x << " " << analytic[250][i + 1] << " " << results[250][i + 1] << endl;  // t = 1.08;
         x += h;
     }
-    
     x = x_start;
     cout << steps_t[500] << endl;
     for (int i = 0; i < m; i++) {
@@ -307,7 +309,7 @@ void KMB_save() {
 
     file1.close();
     file2.close();
-   file3.close();
+    file3.close();
 
     double *maxErrors = maxError(error, n, m);
     ofstream fileError;
@@ -357,27 +359,27 @@ void LassonenThomasSave() {
 
 
     double x = x_start;
-    cout << steps_t[50] << endl;
+    cout << steps_t[500] << endl;
     for (int i = 0; i < m; i++) {
-        if (abs(results[50][i + 1]) < 1e-16)
+        if (abs(results[500][i + 1]) < 1e-16)
             break;
-        lt100 << x << " " << analytic[50][i + 1] << " " << results[50][i + 1] << endl;  // t = 0.3125;
+        lt100 << x << " " << analytic[500][i + 1] << " " << results[500][i + 1] << endl;  // t = 0.3125;
         x += h;
     }
     x = x_start;
-    cout << steps_t[100] << endl;
+    cout << steps_t[1200] << endl;
     for (int i = 0; i < m; i++) {
-        if (abs(results[100][i + 1]) < 1e-16)
+        if (abs(results[1200][i + 1]) < 1e-16)
             break;
-        lt300 << x << " " << analytic[100][i + 1] << " " << results[100][i + 1] << endl;  // t = 0.75;
+        lt300 << x << " " << analytic[1200][i + 1] << " " << results[1200][i + 1] << endl;  // t = 0.75;
         x += h;
     }
     x = x_start;
-    cout << steps_t[200] << endl;
+    cout << steps_t[2000] << endl;
     for (int i = 0; i < m; i++) {
-        if (abs(results[400][i + 1]) < 1e-16)
+        if (abs(results[2000][i + 1]) < 1e-16)
             break;
-        lt400 << x << " " << analytic[200][i + 1] << " " << results[200][i + 1] << endl;  // t = 1.25;
+        lt400 << x << " " << analytic[2000][i + 1] << " " << results[2000][i + 1] << endl;  // t = 1.25;
         x += h;
     }
 
@@ -436,27 +438,27 @@ void LaasonenSORSave() {
 
 
     double x = x_start;
-    cout << steps_t[50] << endl;
-    for (int i = 0; i < m; i++) {
-        if (abs(results[50][i + 1]) < 1e-16)
-            break;
-        sor100 << x << " " << analytic[50][i + 1] << " " << results[50][i + 1] << endl;  // t = 0.3125;
-        x += h;
-    }
-    x = x_start;
-    cout << steps_t[100] << endl;
-    for (int i = 0; i < m; i++) {
-        if (abs(results[100][i + 1]) < 1e-16)
-            break;
-        sor300 << x << " " << analytic[100][i + 1] << " " << results[100][i + 1] << endl;  // t = 0.75;
-        x += h;
-    }
-    x = x_start;
     cout << steps_t[200] << endl;
     for (int i = 0; i < m; i++) {
         if (abs(results[200][i + 1]) < 1e-16)
             break;
-        sor400 << x << " " << analytic[200][i + 1] << " " << results[200][i + 1] << endl;  // t = 1.25;
+        sor100 << x << " " << analytic[200][i + 1] << " " << results[200][i + 1] << endl;  // t = 0.3125;
+        x += h;
+    }
+    x = x_start;
+    cout << steps_t[700] << endl;
+    for (int i = 0; i < m; i++) {
+        if (abs(results[700][i + 1]) < 1e-16)
+            break;
+        sor300 << x << " " << analytic[700][i + 1] << " " << results[700][i + 1] << endl;  // t = 0.75;
+        x += h;
+    }
+    x = x_start;
+    cout << steps_t[1000] << endl;
+    for (int i = 0; i < m; i++) {
+        if (abs(results[1000][i + 1]) < 1e-16)
+            break;
+        sor400 << x << " " << analytic[1000][i + 1] << " " << results[1000][i + 1] << endl;  // t = 1.25;
         x += h;
     }
 
@@ -493,12 +495,10 @@ int main() {
     time_t begin, end;
     time(&begin);
     KMB_save();
-    LassonenThomasSave();
-    LaasonenSORSave();
+    //LassonenThomasSave();
+    //LaasonenSORSave();
     time(&end);
     time_t czas = end - begin;
     printf("Czas: %ld sek.", czas);
     return 0;
 }
-
-
