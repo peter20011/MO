@@ -6,27 +6,24 @@
 #include <algorithm>
 const double D = 1.0;
 const double TAU = 0.1;
-
-const double t_min = 0.0;
-const double t_max = 2.0;
-const double a = 6*sqrt(D*(TAU+t_max))+0.1;
-const double x_start =-a ;
-const double x_end = a;
-
-const double lambda_kmb = 0.4;
-const double lambda_laasonen = 1.0;
-
+const double TMIN = 0.0;
+const double TMAX = 2.0;
+const double A = 6*sqrt(D*(TAU+TMAX))+0.1;
+const double x_start =-A ;
+const double x_end = A;
+const double LAMBDA_BEZPOSREDNIE = 0.4;
+const double LAMBDA_POSREDNIE = 1.0;
 const double h = 0.025; 
 
 using namespace std;
 
 //Zapisywanie do pliku na wygląd siatki czasowo-przestrzennej
-void saveToFile(const string &fileName, double **matrix, int n, int m) {
+void zapis_do_pliku(const string &nazwa, double **macierz, int n, int m) {
     ofstream out;
-    out.open("../" + fileName);
+    out.open("../" + nazwa);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
-            out << matrix[i][j] << " ";
+            out << macierz[i][j] << " ";
         }
         out << endl;
     }
@@ -34,20 +31,20 @@ void saveToFile(const string &fileName, double **matrix, int n, int m) {
 }
 
 //alokowanie macierzy
-double **allocMatrix(int n, int m) {
-    auto **matrix = new double *[n];
+double **tworzenie_macierzy(int n, int m) {
+    auto **macierz = new double *[n];
     for (int i = 0; i < n; i++) {
-        matrix[i] = new double[m];
+        macierz[i] = new double[m];
     }
-    return matrix;
+    return macierz;
 }
 
 //dealokowanie macierzy
-void deleteMatrix(double **matrix, int n) {
+void deleteMatrix(double **macierz, int n) {
     for (int i = 0; i < n; i++) {
-        delete[] matrix[i];
+        delete[] macierz[i];
     }
-    delete[] matrix;
+    delete[] macierz;
 }
 
 //wyliczanie maxError dla każdego t

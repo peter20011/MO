@@ -6,6 +6,7 @@
 #include "/mnt/c/Users/User/Desktop/Zajęcia/MO/Lab11/fun.cpp"
 using namespace std;
 
+//rozwiazanie analityczne
 double U_anal(double x,double t){
     return (1./(sqrt(M_PI*D*(TAU+t))))*exp(-(x*x)/(4*D*(t+TAU)));
 }
